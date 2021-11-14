@@ -3,9 +3,16 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimary">@color/colorMainTheme</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/colorMainTheme</item>
     </style>
+    <style name="CustomLoginTheme" parent="FirebaseUI">
+        <item name="colorPrimary">@color/colorMainTheme</item>
+        <item name="colorAccent">@color/colorMainTheme</item>
 
+
+        <!-- On API 21+ you can use android:statusBarColor -->
+        <item name="colorPrimaryDark">@color/colorMainTheme</item>
+    </style>
 </resources>
