@@ -33,9 +33,7 @@ class AuthenticationActivity : AppCompatActivity() {
    private lateinit var signInLauncher:ActivityResultLauncher<Intent>
 
    private lateinit var authenticationViewModel: AuthenticationViewModel
-
- private  var idpResponse: IdpResponse? = null
-  private lateinit var signInIntent : Intent
+   private var resultCode:Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,20 +51,25 @@ class AuthenticationActivity : AppCompatActivity() {
     }
 
     private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
-      idpResponse =  IdpResponse.fromResultIntent(signInIntent)
-        if(result.resultCode == Activity.RESULT_OK){
+         resultCode = result.resultCode
+        when(resultCode){
+           Activity.RESULT_OK ->{
                 //if the user is authenticated ,send him to reminders activity
                 val intent = Intent(this,RemindersActivity::class.java)
                 startActivity(intent)
                 Toast.makeText(this,"login success",Toast.LENGTH_SHORT).show()
+            }
+            Activity.RESULT_CANCELED -> onBackPressed() //TODO doesn't work as intended
         }
+
+
 
 
     }
 
     override fun onBackPressed() {
 
-        if (idpResponse == null){
+        if (resultCode == Activity.RESULT_CANCELED){
             val builder = AlertDialog.Builder(this)
             builder.apply {
                 setMessage(R.string.alert_dialog_message)
@@ -80,9 +83,9 @@ class AuthenticationActivity : AppCompatActivity() {
                         // User cancelled the dialog
                        dialog.dismiss()
                     }
-            }.create()
+            }.create().show()
         }
-        else{super.onBackPressed()}
+      else{super.onBackPressed()}
 
 
     }
@@ -103,7 +106,7 @@ class AuthenticationActivity : AppCompatActivity() {
 
         // Create and launch sign-in intent. We listen to the response of this activity with the
         // SIGN_IN_RESULT_CODE code.
-        signInIntent =
+      val  signInIntent =
             AuthUI.getInstance()
                 .createSignInIntentBuilder()
                 .setAvailableProviders(providers)
