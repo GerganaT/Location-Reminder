@@ -1,25 +1,24 @@
 package com.udacity.project4.authentication
 
 import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
-import androidx.navigation.findNavController
 import com.firebase.ui.auth.AuthMethodPickerLayout
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.IdpResponse
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
-import com.google.firebase.auth.FirebaseAuth
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import com.udacity.project4.R
 import com.udacity.project4.databinding.ActivityAuthenticationBinding
 import com.udacity.project4.locationreminders.RemindersActivity
+import kotlin.math.sign
 
 /**
  * This class should be the starting point of the app, It asks the users to sign in / register, and redirects the
@@ -34,6 +33,9 @@ class AuthenticationActivity : AppCompatActivity() {
    private lateinit var signInLauncher:ActivityResultLauncher<Intent>
 
    private lateinit var authenticationViewModel: AuthenticationViewModel
+
+ private  var idpResponse: IdpResponse? = null
+  private lateinit var signInIntent : Intent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,23 +53,39 @@ class AuthenticationActivity : AppCompatActivity() {
     }
 
     private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
+      idpResponse =  IdpResponse.fromResultIntent(signInIntent)
         if(result.resultCode == Activity.RESULT_OK){
-            //if the user is authenticated ,send him to reminders activity
-            val intent = Intent(this,RemindersActivity::class.java)
-            startActivity(intent)
-            Toast.makeText(this,"login success",Toast.LENGTH_SHORT).show()
+                //if the user is authenticated ,send him to reminders activity
+                val intent = Intent(this,RemindersActivity::class.java)
+                startActivity(intent)
+                Toast.makeText(this,"login success",Toast.LENGTH_SHORT).show()
         }
-        else{
-            authenticationViewModel.authenticatedState.observe(this, Observer { authState ->
-                when(authState){
-                    AuthenticationViewModel.AuthenticationState.AUTHENTICATED -> Log.i(TAG,"user login success")
-                    else -> findNavController(R.id.nav_host_fragment).popBackStack()
-                }
-            })
-            Toast.makeText(this,"login failed",Toast.LENGTH_SHORT).show()
-        }
+
+
     }
 
+    override fun onBackPressed() {
+
+        if (idpResponse == null){
+            val builder = AlertDialog.Builder(this)
+            builder.apply {
+                setMessage(R.string.alert_dialog_message)
+                setPositiveButton(R.string.alert_dialog_ok)
+                    { _, _ ->
+                        // User clicked OK button
+                        super.onBackPressed()
+                    }
+                setNegativeButton(R.string.alert_dialog_cancel)
+                   { dialog, _ ->
+                        // User cancelled the dialog
+                       dialog.dismiss()
+                    }
+            }.create()
+        }
+        else{super.onBackPressed()}
+
+
+    }
 
     fun launchSignInFlow() {
         // Give users the option to sign in / register with their email or Google account. If users
@@ -85,7 +103,7 @@ class AuthenticationActivity : AppCompatActivity() {
 
         // Create and launch sign-in intent. We listen to the response of this activity with the
         // SIGN_IN_RESULT_CODE code.
-        val signInIntent =
+        signInIntent =
             AuthUI.getInstance()
                 .createSignInIntentBuilder()
                 .setAvailableProviders(providers)
@@ -97,4 +115,3 @@ class AuthenticationActivity : AppCompatActivity() {
 
     }
 }
-//TODO fix issue where app crashes after back button press
