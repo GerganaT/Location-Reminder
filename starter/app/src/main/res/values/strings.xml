@@ -44,7 +44,7 @@
     <string name="login_button_label">login</string>
     <string name="google_login_button_label">Sign in with Google</string>
     <string name="email_login_button_label">Sign in with email</string>
-    <string name="alert_dialog_message">Cancel sign in and exit app?</string>
+    <string name="alert_dialog_message">Return to login?</string>
     <string name="alert_dialog_cancel">Cancel</string>
     <string name="alert_dialog_ok">OK</string>
 

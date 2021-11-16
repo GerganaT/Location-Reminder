@@ -1,12 +1,9 @@
 package com.udacity.project4.locationreminders
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.NavHostFragment
 import com.udacity.project4.R
 import kotlinx.android.synthetic.main.activity_reminders.*
@@ -30,5 +27,25 @@ class RemindersActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onBackPressed() {
+        showOnBackPressedWarningDialog()
+    }
+
+
+    private fun showOnBackPressedWarningDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.apply {
+            setMessage(R.string.alert_dialog_message)
+            setPositiveButton(R.string.alert_dialog_ok)
+            { _, _ ->
+                super.onBackPressed()
+            }
+            setNegativeButton(R.string.alert_dialog_cancel)
+            { dialog, _ ->
+                dialog.dismiss()
+            }
+        }.create().show()
     }
 }

@@ -34,6 +34,8 @@ class ReminderListFragment : BaseFragment() {
 
         binding.refreshLayout.setOnRefreshListener { _viewModel.loadReminders() }
 
+
+
         return binding.root
     }
 
@@ -73,12 +75,14 @@ class ReminderListFragment : BaseFragment() {
         when (item.itemId) {
          R.id.logout -> {
              AuthUI.getInstance().signOut(requireContext())
-             requireActivity().finish()
+            requireActivity().finish()
          }
         }
         return super.onOptionsItemSelected(item)
 
     }
+
+
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
