@@ -47,5 +47,6 @@
     <string name="alert_dialog_message">Return to login?</string>
     <string name="alert_dialog_cancel">Cancel</string>
     <string name="alert_dialog_ok">OK</string>
+    <string name="home">Home</string>
 
 </resources>

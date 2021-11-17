@@ -1,10 +1,16 @@
 package com.udacity.project4.locationreminders.savereminder.selectreminderlocation
 
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.*
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
@@ -16,26 +22,13 @@ import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import org.koin.android.ext.android.inject
 
-class SelectLocationFragment : BaseFragment() {
+class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     //Use Koin to get the view model of the SaveReminder
     override val _viewModel: SaveReminderViewModel by inject()
     private lateinit var binding: FragmentSelectLocationBinding
-
-    private val callback = OnMapReadyCallback { googleMap ->
-        /**
-         * Manipulates the map once available.
-         * This callback is triggered when the map is ready to be used.
-         * This is where we can add markers or lines, add listeners or move the camera.
-         * In this case, we just add a marker near Sydney, Australia.
-         * If Google Play services is not installed on the device, the user will be prompted to
-         * install it inside the SupportMapFragment. This method will only be triggered once the
-         * user has installed Google Play services and returned to the app.
-         */
-        val sydney = LatLng(-34.0, 151.0)
-        googleMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-    }
+    private lateinit var map: GoogleMap
+    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -44,7 +37,7 @@ class SelectLocationFragment : BaseFragment() {
             DataBindingUtil.inflate(inflater, R.layout.fragment_select_location, container, false)
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        mapFragment?.getMapAsync(callback)
+        mapFragment?.getMapAsync(this)
 
         binding.viewModel = _viewModel
         binding.lifecycleOwner = this
@@ -52,7 +45,15 @@ class SelectLocationFragment : BaseFragment() {
         setHasOptionsMenu(true)
         setDisplayHomeAsUpEnabled(true)
 
-//        TODO: zoom to the user location after taking his permission
+        requestPermissionLauncher =
+            registerForActivityResult(
+                ActivityResultContracts.RequestPermission()
+            ) { isGranted: Boolean ->
+                if (isGranted) {
+                    showMyLocationOnTheMap()
+                }
+            }
+
 //        TODO: add style to the map
 //        TODO: put a marker to location that the user selected
 
@@ -61,6 +62,44 @@ class SelectLocationFragment : BaseFragment() {
         onLocationSelected()
 
         return binding.root
+    }
+
+    private fun enableMyLocation() {
+        if (
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            map.isMyLocationEnabled = true
+            showMyLocationOnTheMap()
+        } else {
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        map = googleMap
+        enableMyLocation()
+
+    }
+  // showing dummy location at GooglePlex for security reasons
+    private fun showMyLocationOnTheMap() {
+        val latitude = 37.422131
+        val longitude = -122.084801
+        val homeLatLong = LatLng(latitude, longitude)
+        val cameraZoom = 18f
+
+        map.moveCamera(
+            CameraUpdateFactory
+                .newLatLngZoom(homeLatLong, cameraZoom)
+        )
+        map.addMarker(
+            MarkerOptions()
+                .position(homeLatLong)
+                .title(getString(R.string.home))
+        )
     }
 
     private fun onLocationSelected() {
