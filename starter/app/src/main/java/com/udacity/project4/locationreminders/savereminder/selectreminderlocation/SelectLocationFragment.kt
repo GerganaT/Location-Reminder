@@ -3,7 +3,9 @@ package com.udacity.project4.locationreminders.savereminder.selectreminderlocati
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -13,7 +15,9 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
@@ -21,11 +25,13 @@ import com.udacity.project4.databinding.FragmentSelectLocationBinding
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import org.koin.android.ext.android.inject
+import java.util.*
 
 class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     //Use Koin to get the view model of the SaveReminder
     override val _viewModel: SaveReminderViewModel by inject()
+    private val TAG = SelectLocationFragment::class.java.simpleName
     private lateinit var binding: FragmentSelectLocationBinding
     private lateinit var map: GoogleMap
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
@@ -35,28 +41,23 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     ): View? {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_select_location, container, false)
-
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        mapFragment?.getMapAsync(this)
-
         binding.viewModel = _viewModel
         binding.lifecycleOwner = this
 
         setHasOptionsMenu(true)
         setDisplayHomeAsUpEnabled(true)
 
+        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        mapFragment?.getMapAsync(this)
+
         requestPermissionLauncher =
             registerForActivityResult(
                 ActivityResultContracts.RequestPermission()
             ) { isGranted: Boolean ->
                 if (isGranted) {
-                    showMyLocationOnTheMap()
+                    setupMap()
                 }
             }
-
-//        TODO: add style to the map
-//        TODO: put a marker to location that the user selected
-
 
 //        TODO: call this function after the user confirms on the selected location
         onLocationSelected()
@@ -72,7 +73,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             map.isMyLocationEnabled = true
-            showMyLocationOnTheMap()
+            setupMap()
         } else {
             requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
@@ -84,12 +85,13 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         enableMyLocation()
 
     }
-  // showing dummy location at GooglePlex for security reasons
-    private fun showMyLocationOnTheMap() {
+
+    private fun setupMap() {
+        // showing dummy location at GooglePlex for security reasons
         val latitude = 37.422131
         val longitude = -122.084801
         val homeLatLong = LatLng(latitude, longitude)
-        val cameraZoom = 18f
+        val cameraZoom = 19f
 
         map.moveCamera(
             CameraUpdateFactory
@@ -98,8 +100,60 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         map.addMarker(
             MarkerOptions()
                 .position(homeLatLong)
-                .title(getString(R.string.home))
+                .title(getString(R.string.my_location))
         )
+      setMapStyle(map)
+      addMarkerOnClick(map)
+      onPoiClicked(map)
+    }
+
+    private fun setMapStyle(map: GoogleMap) {
+        // Customize the styling of the base map using a JSON object defined
+        // in a raw resource file.
+        try {
+            val styleIsLoaded = map.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(
+                    requireContext(), R.raw.map_style
+                )
+            )
+            if (!styleIsLoaded) {
+                Log.e(TAG, "style loading issue")
+            }
+        } catch (e: Resources.NotFoundException) {
+            Log.e(TAG, ":Map style resource not found", e)
+        }
+    }
+
+    private fun addMarkerOnClick(map: GoogleMap) {
+        map.setOnMapLongClickListener { latLong: LatLng ->
+            val snippet = String.format(
+                Locale.getDefault(),
+                getString(R.string.lat_long_snippet),
+                latLong.latitude,
+                latLong.longitude
+            )
+            map.addMarker(
+                MarkerOptions()
+                    .position(latLong)
+                    .title(getString(R.string.dropped_pin))
+                    .snippet(snippet)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
+            )
+
+
+        }
+    }
+
+    private fun onPoiClicked(map: GoogleMap) {
+        map.setOnPoiClickListener {
+            val poiMarker = map.addMarker(
+                MarkerOptions()
+                    .position(it.latLng)
+                    .title(it.name)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+            )
+            poiMarker?.showInfoWindow()
+        }
     }
 
     private fun onLocationSelected() {
@@ -114,17 +168,20 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     }
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        // TODO: Change the map type based on the user's selection.
         R.id.normal_map -> {
+            map.mapType = GoogleMap.MAP_TYPE_NORMAL
             true
         }
         R.id.hybrid_map -> {
+            map.mapType = GoogleMap.MAP_TYPE_HYBRID
             true
         }
         R.id.satellite_map -> {
+            map.mapType = GoogleMap.MAP_TYPE_SATELLITE
             true
         }
         R.id.terrain_map -> {
+            map.mapType = GoogleMap.MAP_TYPE_TERRAIN
             true
         }
         else -> super.onOptionsItemSelected(item)
