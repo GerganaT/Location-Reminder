@@ -2,13 +2,16 @@ package com.udacity.project4.locationreminders.savereminder.selectreminderlocati
 
 
 import android.Manifest
+import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -105,6 +108,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
       setMapStyle(map)
       addMarkerOnClick(map)
       onPoiClicked(map)
+        showNoMarkerPlacedDialog()
     }
 
     private fun setMapStyle(map: GoogleMap) {
@@ -140,7 +144,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
             )
 
-
         }
     }
 
@@ -154,6 +157,22 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             )
             poiMarker?.showInfoWindow()
         }
+    }
+
+    private fun showNoMarkerPlacedDialog() {
+     val dialog =AlertDialog.Builder(requireContext())
+            .apply {
+            setMessage(R.string.select_poi)
+            setPositiveButton(R.string.alert_dialog_ok)
+            { dialog:DialogInterface, _ ->
+                dialog.dismiss()
+            }
+        }.create()
+        dialog.show()
+        val messageText = dialog.findViewById(android.R.id.message) as? TextView
+        messageText?.textSize = resources.getDimension(R.dimen.text_size_extra_small)
+        val okButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+        okButton.textSize = resources.getDimension(R.dimen.text_size_extra_small)
     }
 
     private fun onLocationSelected() {
