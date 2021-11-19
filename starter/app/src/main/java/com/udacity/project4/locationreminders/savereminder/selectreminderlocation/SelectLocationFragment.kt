@@ -2,15 +2,18 @@ package com.udacity.project4.locationreminders.savereminder.selectreminderlocati
 
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -35,6 +38,10 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     //Use Koin to get the view model of the SaveReminder
     override val _viewModel: SaveReminderViewModel by inject()
     private val TAG = SelectLocationFragment::class.java.simpleName
+    private val runningQOrLater = Build.VERSION.SDK_INT >=
+            Build.VERSION_CODES.Q
+    private val runningROrLater = Build.VERSION.SDK_INT >=
+            Build.VERSION_CODES.R
     private lateinit var binding: FragmentSelectLocationBinding
     private lateinit var map: GoogleMap
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
@@ -49,7 +56,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
         setHasOptionsMenu(true)
         setDisplayHomeAsUpEnabled(true)
-
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
 
@@ -62,28 +68,73 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 }
             }
         //TODO:Enable up button
-         //TODO show alert dialog just once during app runtime
         //TODO: call this function after the user confirms on the selected location
         onLocationSelected()
 
         return binding.root
     }
 
+    @SuppressLint("MissingPermission")
+    @RequiresApi(Build.VERSION_CODES.R)
     private fun enableMyLocation() {
-        if (
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
+        if (permissionsGranted()) {
             map.isMyLocationEnabled = true
             setupMap()
+
         } else {
-            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+
+            when {
+                runningQOrLater -> {
+                    requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                    requestPermissionLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                }
+                runningROrLater -> {
+                    AlertDialog.Builder(requireContext())
+                        .setTitle(R.string.background_location_permission_title)
+                        .setMessage(R.string.background_location_permission_message)
+                        .setPositiveButton(R.string.alert_dialog_ok) { _, _ ->
+                            // this request will take user to Application's Setting page
+                            requestPermissionLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                        }
+                        .setNegativeButton(R.string.no) { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        .create()
+                        .show()
+                    requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                }
+                else -> {
+                    requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                }
+            }
         }
 
     }
 
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun permissionsGranted(): Boolean {
+        val foregroundLocationPermission = ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+
+        val backgroundLocationPermission = ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_BACKGROUND_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+        return when {
+            runningQOrLater -> {
+                foregroundLocationPermission && backgroundLocationPermission
+            }
+            else -> {
+                foregroundLocationPermission
+            }
+        }
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.R)
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         enableMyLocation()
@@ -110,6 +161,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         addMarkerOnClick(map)
         onPoiClicked(map)
         showNoMarkerPlacedDialog()
+
     }
 
     private fun setMapStyle(map: GoogleMap) {
@@ -161,19 +213,23 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     }
 
     private fun showNoMarkerPlacedDialog() {
-        val dialog = AlertDialog.Builder(requireContext())
-            .apply {
-                setMessage(R.string.select_poi)
-                setPositiveButton(R.string.alert_dialog_ok)
-                { dialog: DialogInterface, _ ->
-                    dialog.dismiss()
-                }
-            }.create()
-        dialog.show()
-        val messageText = dialog.findViewById(android.R.id.message) as? TextView
-        messageText?.textSize = resources.getDimension(R.dimen.text_size_extra_small)
-        val okButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-        okButton.textSize = resources.getDimension(R.dimen.text_size_extra_small)
+        if (!_viewModel.alertShown) {
+            val dialog = AlertDialog.Builder(requireContext())
+                .apply {
+                    setMessage(R.string.select_poi)
+                    setPositiveButton(R.string.alert_dialog_ok)
+                    { dialog: DialogInterface, _ ->
+                        _viewModel.alertDialogShown()
+                        dialog.dismiss()
+                    }
+                }.create()
+            dialog.show()
+            val messageText = dialog.findViewById(android.R.id.message) as? TextView
+            messageText?.textSize = resources.getDimension(R.dimen.text_size_extra_small)
+            val okButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            okButton.textSize = resources.getDimension(R.dimen.text_size_extra_small)
+        }
+
     }
 
     private fun onLocationSelected() {

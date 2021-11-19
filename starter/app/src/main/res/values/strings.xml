@@ -48,5 +48,8 @@
     <string name="alert_dialog_cancel">Cancel</string>
     <string name="alert_dialog_ok">OK</string>
     <string name="my_location">My Location</string>
+    <string name="no">No,thanks.</string>
+    <string name="background_location_permission_title">Allow background location tracking?</string>
+    <string name="background_location_permission_message">This will show the correct reminder,whenever close to its relevant location.</string>
 
 </resources>
