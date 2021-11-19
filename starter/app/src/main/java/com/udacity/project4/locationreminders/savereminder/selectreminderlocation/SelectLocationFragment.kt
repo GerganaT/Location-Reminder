@@ -61,8 +61,9 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                     setupMap()
                 }
             }
-
-//        TODO: call this function after the user confirms on the selected location
+        //TODO:Enable up button
+         //TODO show alert dialog just once during app runtime
+        //TODO: call this function after the user confirms on the selected location
         onLocationSelected()
 
         return binding.root
@@ -105,9 +106,9 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 .position(homeLatLong)
                 .title(getString(R.string.my_location))
         )
-      setMapStyle(map)
-      addMarkerOnClick(map)
-      onPoiClicked(map)
+        setMapStyle(map)
+        addMarkerOnClick(map)
+        onPoiClicked(map)
         showNoMarkerPlacedDialog()
     }
 
@@ -160,14 +161,14 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     }
 
     private fun showNoMarkerPlacedDialog() {
-     val dialog =AlertDialog.Builder(requireContext())
+        val dialog = AlertDialog.Builder(requireContext())
             .apply {
-            setMessage(R.string.select_poi)
-            setPositiveButton(R.string.alert_dialog_ok)
-            { dialog:DialogInterface, _ ->
-                dialog.dismiss()
-            }
-        }.create()
+                setMessage(R.string.select_poi)
+                setPositiveButton(R.string.alert_dialog_ok)
+                { dialog: DialogInterface, _ ->
+                    dialog.dismiss()
+                }
+            }.create()
         dialog.show()
         val messageText = dialog.findViewById(android.R.id.message) as? TextView
         messageText?.textSize = resources.getDimension(R.dimen.text_size_extra_small)
