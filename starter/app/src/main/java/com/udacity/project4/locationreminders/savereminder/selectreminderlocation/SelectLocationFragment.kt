@@ -2,18 +2,15 @@ package com.udacity.project4.locationreminders.savereminder.selectreminderlocati
 
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.content.res.Resources
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -38,10 +35,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     //Use Koin to get the view model of the SaveReminder
     override val _viewModel: SaveReminderViewModel by inject()
     private val TAG = SelectLocationFragment::class.java.simpleName
-    private val runningQOrLater = Build.VERSION.SDK_INT >=
-            Build.VERSION_CODES.Q
-    private val runningROrLater = Build.VERSION.SDK_INT >=
-            Build.VERSION_CODES.R
     private lateinit var binding: FragmentSelectLocationBinding
     private lateinit var map: GoogleMap
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
@@ -74,67 +67,22 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         return binding.root
     }
 
-    @SuppressLint("MissingPermission")
-    @RequiresApi(Build.VERSION_CODES.R)
     private fun enableMyLocation() {
-        if (permissionsGranted()) {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             map.isMyLocationEnabled = true
             setupMap()
 
         } else {
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
 
-            when {
-                runningQOrLater -> {
-                    requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-                    requestPermissionLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-                }
-                runningROrLater -> {
-                    AlertDialog.Builder(requireContext())
-                        .setTitle(R.string.background_location_permission_title)
-                        .setMessage(R.string.background_location_permission_message)
-                        .setPositiveButton(R.string.alert_dialog_ok) { _, _ ->
-                            // this request will take user to Application's Setting page
-                            requestPermissionLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-                        }
-                        .setNegativeButton(R.string.no) { dialog, _ ->
-                            dialog.dismiss()
-                        }
-                        .create()
-                        .show()
-                    requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-                }
-                else -> {
-                    requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-                }
-            }
-        }
-
-    }
-
-
-    @RequiresApi(Build.VERSION_CODES.Q)
-    private fun permissionsGranted(): Boolean {
-        val foregroundLocationPermission = ContextCompat.checkSelfPermission(
-            requireContext(),
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-
-        val backgroundLocationPermission = ContextCompat.checkSelfPermission(
-            requireContext(),
-            Manifest.permission.ACCESS_BACKGROUND_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-        return when {
-            runningQOrLater -> {
-                foregroundLocationPermission && backgroundLocationPermission
-            }
-            else -> {
-                foregroundLocationPermission
-            }
         }
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.R)
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         enableMyLocation()

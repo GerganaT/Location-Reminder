@@ -1,9 +1,15 @@
 package com.udacity.project4.locationreminders.savereminder
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
@@ -59,3 +65,57 @@ class SaveReminderFragment : BaseFragment() {
         _viewModel.onClear()
     }
 }
+//TODO implement below code to get background permission
+
+//private val runningQOrLater = Build.VERSION.SDK_INT >=
+//        Build.VERSION_CODES.Q
+//private val runningROrLater = Build.VERSION.SDK_INT >=
+//        Build.VERSION_CODES.R
+
+//when {
+//    runningQOrLater -> {
+//        requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+//        requestPermissionLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+//    }
+//    runningROrLater -> {
+//        requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+//        AlertDialog.Builder(requireContext())
+//            .setTitle(R.string.background_location_permission_title)
+//            .setMessage(R.string.background_location_permission_message)
+//            .setPositiveButton(R.string.alert_dialog_ok) { _, _ ->
+//                // this request will take user to Application's Setting page
+//                requestPermissionLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+//            }
+//            .setNegativeButton(R.string.no) { dialog, _ ->
+//                dialog.dismiss()
+//            }
+//            .create()
+//            .show()
+//
+//    }
+//    else -> {
+//        requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+//    }
+//}
+
+
+//@RequiresApi(Build.VERSION_CODES.Q)
+//private fun permissionsGranted(): Boolean {
+//    val foregroundLocationPermission = ContextCompat.checkSelfPermission(
+//        requireContext(),
+//        Manifest.permission.ACCESS_FINE_LOCATION
+//    ) == PackageManager.PERMISSION_GRANTED
+//
+//    val backgroundLocationPermission = ContextCompat.checkSelfPermission(
+//        requireContext(),
+//        Manifest.permission.ACCESS_BACKGROUND_LOCATION
+//    ) == PackageManager.PERMISSION_GRANTED
+//    return when {
+//        runningQOrLater -> {
+//            foregroundLocationPermission && backgroundLocationPermission
+//        }
+//        else -> {
+//            foregroundLocationPermission
+//        }
+//    }
+//}
