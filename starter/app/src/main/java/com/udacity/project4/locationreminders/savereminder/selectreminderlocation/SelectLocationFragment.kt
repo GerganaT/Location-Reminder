@@ -44,7 +44,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     ): View? {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_select_location, container, false)
-        binding.viewModel = _viewModel
+        binding.selectLocationFragment = this
         binding.lifecycleOwner = this
 
         setHasOptionsMenu(true)
@@ -60,10 +60,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                     setupMap()
                 }
             }
-        //TODO:Enable up button
-        //TODO: call this function after the user confirms on the selected location
-        onLocationSelected()
-
         return binding.root
     }
 
@@ -106,7 +102,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 .title(getString(R.string.my_location))
         )
         setMapStyle(map)
-        addMarkerOnClick(map)
+        onRandomLocationClicked(map)
         onPoiClicked(map)
         showNoMarkerPlacedDialog()
 
@@ -129,7 +125,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         }
     }
 
-    private fun addMarkerOnClick(map: GoogleMap) {
+    private fun onRandomLocationClicked(map: GoogleMap) {
         map.setOnMapLongClickListener { latLong: LatLng ->
             val snippet = String.format(
                 Locale.getDefault(),
@@ -180,7 +176,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     }
 
-    private fun onLocationSelected() {
+      fun onLocationSelected() {
         //        TODO: When the user confirms on the selected location,
         //         send back the selected location details to the view model
         //         and navigate back to the previous fragment to save the reminder and add the geofence
