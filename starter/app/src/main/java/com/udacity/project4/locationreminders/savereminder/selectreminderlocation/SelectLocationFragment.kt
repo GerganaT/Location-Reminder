@@ -14,14 +14,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.databinding.FragmentSelectLocationBinding
@@ -38,7 +36,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     private lateinit var binding: FragmentSelectLocationBinding
     private lateinit var map: GoogleMap
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
-
+    private var marker: Marker? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -60,8 +58,11 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                     setupMap()
                 }
             }
+
+
         return binding.root
     }
+
 
     private fun enableMyLocation() {
         if (ContextCompat.checkSelfPermission(
@@ -127,17 +128,17 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     private fun onRandomLocationClicked(map: GoogleMap) {
         map.setOnMapLongClickListener { latLong: LatLng ->
-            val snippet = String.format(
+
+            val coordinates = String.format(
                 Locale.getDefault(),
                 getString(R.string.lat_long_snippet),
                 latLong.latitude,
                 latLong.longitude
             )
-            map.addMarker(
+            marker = map.addMarker(
                 MarkerOptions()
                     .position(latLong)
-                    .title(getString(R.string.dropped_pin))
-                    .snippet(snippet)
+                    .title(coordinates)
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
             )
 
@@ -146,12 +147,14 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     private fun onPoiClicked(map: GoogleMap) {
         map.setOnPoiClickListener {
+
             val poiMarker = map.addMarker(
                 MarkerOptions()
                     .position(it.latLng)
                     .title(it.name)
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
             )
+            marker = poiMarker
             poiMarker?.showInfoWindow()
         }
     }
@@ -176,10 +179,38 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     }
 
-      fun onLocationSelected() {
-        //        TODO: When the user confirms on the selected location,
-        //         send back the selected location details to the view model
-        //         and navigate back to the previous fragment to save the reminder and add the geofence
+    fun onLocationSelected() {
+        if (marker != null) {
+            _viewModel.reminderSelectedLocationStr.value = marker?.title
+            _viewModel.latitude.value = marker?.position?.latitude
+            _viewModel.longitude.value = marker?.position?.longitude
+            findNavController().popBackStack()
+
+        }
+        else{
+            val dialog = AlertDialog.Builder(requireContext())
+                .apply {
+                    setTitle(R.string.alert_dialog_location_not_selected)
+                    setMessage(R.string.alert_dialog_exit_map_warning)
+                    setNegativeButton(R.string.alert_dialog_cancel){
+                            dialog: DialogInterface, _ ->
+                        dialog.dismiss()
+                    }
+                    setPositiveButton(R.string.alert_dialog_exit_button)
+                    { _, _ ->
+                        findNavController().popBackStack()
+                    }
+                }.create()
+            dialog.show()
+            val title = dialog.findViewById(android.R.id.title) as? TextView
+            title?.textSize = resources.getDimension(R.dimen.text_size_extra_small)
+            val messageText = dialog.findViewById(android.R.id.message) as? TextView
+            messageText?.textSize = resources.getDimension(R.dimen.text_size_extra_small)
+            val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            positiveButton.textSize = resources.getDimension(R.dimen.text_size_extra_small)
+            val negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+            negativeButton.textSize = resources.getDimension(R.dimen.text_size_extra_small)
+        }
     }
 
 

@@ -5,7 +5,7 @@
     <string name="no_data">No Data</string>
     <string name="reminder_title">Reminder Title</string>
     <string name="reminder_desc">Description</string>
-    <string name="reminder_location">Reminder Location</string>
+    <string name="reminder_location">Reminder Location Coordinates :</string>
     <string name="save">Save</string>
     <string name="reminder_saved">Reminder Saved !</string>
     <string name="logout">Logout</string>
@@ -51,5 +51,8 @@
     <string name="no">No,thanks.</string>
     <string name="background_location_permission_title">Allow background location tracking?</string>
     <string name="background_location_permission_message">This will show the correct reminder,whenever close to its relevant location.</string>
+    <string name="alert_dialog_location_not_selected">No location selected</string>
+    <string name="alert_dialog_exit_map_warning">You are about to exit without saving location. Are you sure?</string>
+    <string name="alert_dialog_exit_button">exit</string>
 
 </resources>

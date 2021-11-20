@@ -6,6 +6,10 @@
         <variable
             name="selectLocationFragment"
             type="com.udacity.project4.locationreminders.savereminder.selectreminderlocation.SelectLocationFragment" />
+        <variable
+            name="viewModel"
+            type="com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

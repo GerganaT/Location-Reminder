@@ -21,7 +21,8 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
     val selectedPOI = MutableLiveData<PointOfInterest>()
     val latitude = MutableLiveData<Double>()
     val longitude = MutableLiveData<Double>()
-    var alertShown:Boolean = false
+    var alertShown: Boolean = false
+
 
     /**
      * Signal that the user already handled the AlertDialog,which requires a POI to be selected.
