@@ -36,6 +36,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     private lateinit var binding: FragmentSelectLocationBinding
     private lateinit var map: GoogleMap
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
+    private lateinit var foregroundLocationPermission: String
     private var marker: Marker? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -56,6 +57,8 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             ) { isGranted: Boolean ->
                 if (isGranted) {
                     setupMap()
+                } else {
+                    showLocationPermissionEducationalUI(foregroundLocationPermission)
                 }
             }
 
@@ -65,18 +68,56 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
 
     private fun enableMyLocation() {
-        if (ContextCompat.checkSelfPermission(
+        foregroundLocationPermission = Manifest.permission.ACCESS_FINE_LOCATION
+        when {
+            ContextCompat.checkSelfPermission(
                 requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
+                foregroundLocationPermission
             ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            map.isMyLocationEnabled = true
-            setupMap()
+            -> {
+                map.isMyLocationEnabled = true
+                setupMap()
 
-        } else {
-            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            }
+            shouldShowRequestPermissionRationale(foregroundLocationPermission) -> {
+                showLocationPermissionEducationalUI(foregroundLocationPermission)
 
+            }
+
+            else -> {
+                requestPermissionLauncher.launch(foregroundLocationPermission)
+
+            }
         }
+    }
+
+    private fun showLocationPermissionEducationalUI(locationPermission: String) {
+        if (_viewModel.locationTrackingAlreadyDenied) {
+            return
+        }
+        val dialog = AlertDialog.Builder(requireContext())
+            .apply {
+                setMessage(R.string.permission_explanation)
+                setNegativeButton(R.string.alert_dialog_deny) { dialog: DialogInterface, _ ->
+                    _viewModel.locationTrackingAlreadyDenied = true
+                    dialog.dismiss()
+                }
+                setPositiveButton(R.string.alert_dialog_allow_button)
+                { _, _ ->
+                    requestPermissionLauncher.launch(locationPermission)
+                }
+            }.create()
+        dialog.show()
+        val title = dialog.findViewById(android.R.id.title) as? TextView
+        title?.textSize = resources.getDimension(R.dimen.text_size_extra_small)
+        val messageText = dialog.findViewById(android.R.id.message) as? TextView
+        messageText?.textSize = resources.getDimension(R.dimen.text_size_extra_small)
+        val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+        positiveButton.textSize = resources.getDimension(R.dimen.text_size_extra_small)
+        val negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+        negativeButton.textSize = resources.getDimension(R.dimen.text_size_extra_small)
+
+
     }
 
 
@@ -105,7 +146,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         setMapStyle(map)
         onRandomLocationClicked(map)
         onPoiClicked(map)
-        showNoMarkerPlacedDialog()
+        showAddLocationMarkerDialog()
 
     }
 
@@ -159,14 +200,14 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         }
     }
 
-    private fun showNoMarkerPlacedDialog() {
-        if (!_viewModel.alertShown) {
+    private fun showAddLocationMarkerDialog() {
+        if (!_viewModel.noMarkerPlacedAlertShown) {
             val dialog = AlertDialog.Builder(requireContext())
                 .apply {
                     setMessage(R.string.select_poi)
                     setPositiveButton(R.string.alert_dialog_ok)
                     { dialog: DialogInterface, _ ->
-                        _viewModel.alertDialogShown()
+                        _viewModel.noMarkerPlacedAlertShown = true
                         dialog.dismiss()
                     }
                 }.create()
@@ -186,31 +227,34 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             _viewModel.longitude.value = marker?.position?.longitude
             findNavController().popBackStack()
 
+        } else {
+            showLocationNotSelectedDialog()
+
         }
-        else{
-            val dialog = AlertDialog.Builder(requireContext())
-                .apply {
-                    setTitle(R.string.alert_dialog_location_not_selected)
-                    setMessage(R.string.alert_dialog_exit_map_warning)
-                    setNegativeButton(R.string.alert_dialog_cancel){
-                            dialog: DialogInterface, _ ->
-                        dialog.dismiss()
-                    }
-                    setPositiveButton(R.string.alert_dialog_exit_button)
-                    { _, _ ->
-                        findNavController().popBackStack()
-                    }
-                }.create()
-            dialog.show()
-            val title = dialog.findViewById(android.R.id.title) as? TextView
-            title?.textSize = resources.getDimension(R.dimen.text_size_extra_small)
-            val messageText = dialog.findViewById(android.R.id.message) as? TextView
-            messageText?.textSize = resources.getDimension(R.dimen.text_size_extra_small)
-            val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-            positiveButton.textSize = resources.getDimension(R.dimen.text_size_extra_small)
-            val negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
-            negativeButton.textSize = resources.getDimension(R.dimen.text_size_extra_small)
-        }
+    }
+
+    private fun showLocationNotSelectedDialog() {
+        val dialog = AlertDialog.Builder(requireContext())
+            .apply {
+                setTitle(R.string.alert_dialog_location_not_selected)
+                setMessage(R.string.alert_dialog_exit_map_warning)
+                setNegativeButton(R.string.alert_dialog_cancel) { dialog: DialogInterface, _ ->
+                    dialog.dismiss()
+                }
+                setPositiveButton(R.string.alert_dialog_exit_button)
+                { _, _ ->
+                    findNavController().popBackStack()
+                }
+            }.create()
+        dialog.show()
+        val title = dialog.findViewById(android.R.id.title) as? TextView
+        title?.textSize = resources.getDimension(R.dimen.text_size_extra_small)
+        val messageText = dialog.findViewById(android.R.id.message) as? TextView
+        messageText?.textSize = resources.getDimension(R.dimen.text_size_extra_small)
+        val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+        positiveButton.textSize = resources.getDimension(R.dimen.text_size_extra_small)
+        val negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+        negativeButton.textSize = resources.getDimension(R.dimen.text_size_extra_small)
     }
 
 

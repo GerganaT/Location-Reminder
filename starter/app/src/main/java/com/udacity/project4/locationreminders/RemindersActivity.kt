@@ -28,24 +28,4 @@ class RemindersActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
-
-    override fun onBackPressed() {
-        showOnBackPressedWarningDialog()
-    }
-
-
-    private fun showOnBackPressedWarningDialog() {
-        val builder = AlertDialog.Builder(this)
-        builder.apply {
-            setMessage(R.string.alert_dialog_message)
-            setPositiveButton(R.string.alert_dialog_ok)
-            { _, _ ->
-                super.onBackPressed()
-            }
-            setNegativeButton(R.string.alert_dialog_cancel)
-            { dialog, _ ->
-                dialog.dismiss()
-            }
-        }.create().show()
-    }
 }

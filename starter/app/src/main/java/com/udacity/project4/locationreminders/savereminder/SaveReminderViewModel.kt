@@ -1,7 +1,6 @@
 package com.udacity.project4.locationreminders.savereminder
 
 import android.app.Application
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.PointOfInterest
@@ -21,16 +20,9 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
     val selectedPOI = MutableLiveData<PointOfInterest>()
     val latitude = MutableLiveData<Double>()
     val longitude = MutableLiveData<Double>()
-    var alertShown: Boolean = false
+    var noMarkerPlacedAlertShown: Boolean = false
+    var locationTrackingAlreadyDenied:Boolean = false
 
-
-    /**
-     * Signal that the user already handled the AlertDialog,which requires a POI to be selected.
-     * We don't want to show this warning more than once during runtime as it would be a bad UX
-     */
-    fun alertDialogShown() {
-        alertShown = true
-    }
 
     /**
      * Clear the live data objects to start fresh next time the view model gets called

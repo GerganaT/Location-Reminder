@@ -20,6 +20,6 @@ class AuthenticationViewModel : ViewModel() {
             else -> AuthenticationState.UNAUTHENTICATED
         }
     }
-
+//TODO apply this logic
 
 }
