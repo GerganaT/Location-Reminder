@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -57,11 +58,8 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             ) { isGranted: Boolean ->
                 if (isGranted) {
                     setupMap()
-                } else {
-                    showLocationPermissionEducationalUI(foregroundLocationPermission)
                 }
             }
-
 
         return binding.root
     }
@@ -85,8 +83,8 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             }
 
             else -> {
-                requestPermissionLauncher.launch(foregroundLocationPermission)
 
+                showLocationPermissionEducationalUI(foregroundLocationPermission)
             }
         }
     }
@@ -124,6 +122,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         enableMyLocation()
+
 
     }
 
@@ -183,12 +182,12 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
             )
 
+
         }
     }
 
     private fun onPoiClicked(map: GoogleMap) {
         map.setOnPoiClickListener {
-
             val poiMarker = map.addMarker(
                 MarkerOptions()
                     .position(it.latLng)
@@ -197,6 +196,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             )
             marker = poiMarker
             poiMarker?.showInfoWindow()
+
         }
     }
 
@@ -228,35 +228,13 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             findNavController().popBackStack()
 
         } else {
-            showLocationNotSelectedDialog()
-
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.no_marker_placed),
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
-
-    private fun showLocationNotSelectedDialog() {
-        val dialog = AlertDialog.Builder(requireContext())
-            .apply {
-                setTitle(R.string.alert_dialog_location_not_selected)
-                setMessage(R.string.alert_dialog_exit_map_warning)
-                setNegativeButton(R.string.alert_dialog_cancel) { dialog: DialogInterface, _ ->
-                    dialog.dismiss()
-                }
-                setPositiveButton(R.string.alert_dialog_exit_button)
-                { _, _ ->
-                    findNavController().popBackStack()
-                }
-            }.create()
-        dialog.show()
-        val title = dialog.findViewById(android.R.id.title) as? TextView
-        title?.textSize = resources.getDimension(R.dimen.text_size_extra_small)
-        val messageText = dialog.findViewById(android.R.id.message) as? TextView
-        messageText?.textSize = resources.getDimension(R.dimen.text_size_extra_small)
-        val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-        positiveButton.textSize = resources.getDimension(R.dimen.text_size_extra_small)
-        val negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
-        negativeButton.textSize = resources.getDimension(R.dimen.text_size_extra_small)
-    }
-
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.map_options, menu)
@@ -281,6 +259,4 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         }
         else -> super.onOptionsItemSelected(item)
     }
-
-
 }
