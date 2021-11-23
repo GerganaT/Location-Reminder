@@ -73,7 +73,7 @@ class AuthenticationActivity : AppCompatActivity() {
             .setGoogleButtonId(R.id.google_login_button)
             .setEmailButtonId(R.id.email_login_button)
             .build()
-        
+
       val  signInIntent =
             AuthUI.getInstance()
                 .createSignInIntentBuilder()

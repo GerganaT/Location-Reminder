@@ -51,7 +51,8 @@
     <string name="my_location">My Location</string>
     <string name="no">No,thanks.</string>
     <string name="background_location_permission_title">Allow background location tracking?</string>
-    <string name="background_location_permission_message">This will show the correct reminder,whenever close to its relevant location.</string>
+    <string name="background_location_permission_message">In order to receive reminder notifications even when not using the app,please
+        allow all the time the following permission request.</string>
     <string name="alert_dialog_location_not_selected">No location selected</string>
     <string name="alert_dialog_exit_map_warning">You are about to exit without saving location. Are you sure?</string>
     <string name="alert_dialog_exit_button">exit</string>

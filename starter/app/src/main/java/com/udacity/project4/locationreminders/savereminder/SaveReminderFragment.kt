@@ -7,7 +7,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -20,10 +21,14 @@ import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import org.koin.android.ext.android.inject
 
+private val runningQOrLater = Build.VERSION.SDK_INT >=
+        Build.VERSION_CODES.Q
+
 class SaveReminderFragment : BaseFragment() {
     //Get the view model this time as a single to be shared with the another fragment
     override val _viewModel: SaveReminderViewModel by inject()
     private lateinit var binding: FragmentSaveReminderBinding
+    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
 
     override fun onCreateView(
@@ -38,10 +43,20 @@ class SaveReminderFragment : BaseFragment() {
 
         binding.viewModel = _viewModel
 
+        requestPermissionLauncher =
+            registerForActivityResult(
+                ActivityResultContracts.RequestPermission()
+            ) { isGranted: Boolean ->
+                if (isGranted) {
+                    //TODO call function to add a geofencing request
+                }
+            }
+
         return binding.root
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = this
@@ -61,6 +76,7 @@ class SaveReminderFragment : BaseFragment() {
             val reminderDataItem = ReminderDataItem(
                 title, description, location, latitude, longitude
             )
+            grantBackgroundPermission()
             _viewModel.validateAndSaveReminder(reminderDataItem)
 
 //            TODO: use the user entered reminder details to:
@@ -74,58 +90,46 @@ class SaveReminderFragment : BaseFragment() {
         //make sure to clear the view model after destroy, as it's a single view model.
         _viewModel.onClear()
     }
+
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun grantBackgroundPermission() {
+        val backgroundPermissionGranted = ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_BACKGROUND_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+        when {
+            runningQOrLater -> {
+                if (backgroundPermissionGranted) {
+                    return
+                } else {
+                    requestBackGroundPermission()
+                }
+
+            }
+
+        }
+    }
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun requestBackGroundPermission() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.background_location_permission_title)
+            .setMessage(R.string.background_location_permission_message)
+            .setPositiveButton(R.string.alert_dialog_allow_button) { _, _ ->
+                requestPermissionLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+            }
+            .setNegativeButton(R.string.no) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+            .show()
+    }
 }
-//TODO implement below code to get background permission
-
-//private val runningQOrLater = Build.VERSION.SDK_INT >=
-//        Build.VERSION_CODES.Q
-//private val runningROrLater = Build.VERSION.SDK_INT >=
-//        Build.VERSION_CODES.R
-
-//when {
-//    runningQOrLater -> {
-//        requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-//        requestPermissionLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-//    }
-//    runningROrLater -> {
-//        requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-//        AlertDialog.Builder(requireContext())
-//            .setTitle(R.string.background_location_permission_title)
-//            .setMessage(R.string.background_location_permission_message)
-//            .setPositiveButton(R.string.alert_dialog_ok) { _, _ ->
-//                // this request will take user to Application's Setting page
-//                requestPermissionLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-//            }
-//            .setNegativeButton(R.string.no) { dialog, _ ->
-//                dialog.dismiss()
-//            }
-//            .create()
-//            .show()
-//
-//    }
-//    else -> {
-//        requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-//    }
-//}
 
 
-//@RequiresApi(Build.VERSION_CODES.Q)
-//private fun permissionsGranted(): Boolean {
-//    val foregroundLocationPermission = ContextCompat.checkSelfPermission(
-//        requireContext(),
-//        Manifest.permission.ACCESS_FINE_LOCATION
-//    ) == PackageManager.PERMISSION_GRANTED
-//
-//    val backgroundLocationPermission = ContextCompat.checkSelfPermission(
-//        requireContext(),
-//        Manifest.permission.ACCESS_BACKGROUND_LOCATION
-//    ) == PackageManager.PERMISSION_GRANTED
-//    return when {
-//        runningQOrLater -> {
-//            foregroundLocationPermission && backgroundLocationPermission
-//        }
-//        else -> {
-//            foregroundLocationPermission
-//        }
-//    }
-//}
+
+
+
+
+
+
