@@ -22,11 +22,7 @@ import com.udacity.project4.locationreminders.RemindersActivity
 /**
  * This class should be the starting point of the app, It asks the users to sign in / register, and redirects the
  * signed in users to the RemindersActivity.
- *
- *
  */
-
-private const val TAG = "AuthenticationActivity"
 
 class AuthenticationActivity : AppCompatActivity() {
    private lateinit var signInLauncher:ActivityResultLauncher<Intent>
@@ -57,15 +53,9 @@ class AuthenticationActivity : AppCompatActivity() {
                 //if the user is authenticated ,send him to reminders activity
                 val intent = Intent(this,RemindersActivity::class.java)
                 startActivity(intent)
-                Toast.makeText(this,"login success",Toast.LENGTH_SHORT).show()
-
+                Toast.makeText(this,"Successfully logged in",Toast.LENGTH_SHORT).show()
             }
-
-
         }
-
-
-
     }
 
 
@@ -83,9 +73,7 @@ class AuthenticationActivity : AppCompatActivity() {
             .setGoogleButtonId(R.id.google_login_button)
             .setEmailButtonId(R.id.email_login_button)
             .build()
-
-        // Create and launch sign-in intent. We listen to the response of this activity with the
-        // SIGN_IN_RESULT_CODE code.
+        
       val  signInIntent =
             AuthUI.getInstance()
                 .createSignInIntentBuilder()

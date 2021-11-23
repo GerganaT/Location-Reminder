@@ -59,6 +59,6 @@
     <string name="alert_dialog_allow_button">allow</string>
     <string name="permission_explanation">In order to view your current location and place a marker
         ,please allow location tracking next.</string>
-    <string name="no_marker_placed">No location marked</string>
+    <string name="no_marker_placed">Pick up location first</string>
 
 </resources>
