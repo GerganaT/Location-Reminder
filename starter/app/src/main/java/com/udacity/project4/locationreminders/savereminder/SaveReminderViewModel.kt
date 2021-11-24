@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.PointOfInterest
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseViewModel
@@ -25,17 +24,15 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
     private val _isEnabled = MutableLiveData<Boolean>()
     val isEnabled: LiveData<Boolean>
         get() = _isEnabled
-  private  val _isMarkerNull= MutableLiveData<Marker>()
-    val isMarkerNull:LiveData<Marker>
-    get() = _isMarkerNull
-    var noMarkerPlacedAlertShown: Boolean = false
 
-    fun setIsMarkerNull(marker: Marker?){
-        _isMarkerNull.value = marker
-    }
+    /**
+     * Enable/disable the "save"-button in the map view screen if the user granted location tracking
+     * permission and created a marker.
+     */
     fun setIsEnabled(boolean: Boolean) {
         _isEnabled.value = boolean
     }
+
 
     /**
      * Clear the live data objects to start fresh next time the view model gets called

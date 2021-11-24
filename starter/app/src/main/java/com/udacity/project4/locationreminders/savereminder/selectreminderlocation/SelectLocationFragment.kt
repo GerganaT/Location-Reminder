@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -51,7 +50,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         setDisplayHomeAsUpEnabled(true)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
-
         requestPermissionLauncher =
             registerForActivityResult(
                 ActivityResultContracts.RequestPermission()
@@ -60,12 +58,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                     setupMap()
                 }
             }
-           _viewModel.isMarkerNull.observe(viewLifecycleOwner,{
-            if (it!=null){
-                _viewModel.setIsEnabled(true)
-            }
-        })
-
 
         return binding.root
     }
@@ -148,7 +140,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         onRandomLocationClicked(map)
         onPoiClicked(map)
         showAddLocationMarkerDialog()
-
     }
 
     private fun setMapStyle(map: GoogleMap) {
@@ -182,7 +173,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                     .title(coordinates)
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
             )
-            _viewModel.setIsMarkerNull(marker)
+            _viewModel.setIsEnabled(true)
 
 
         }
@@ -198,28 +189,26 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             )
             marker = poiMarker
             poiMarker?.showInfoWindow()
-            _viewModel.setIsMarkerNull(marker)
+            _viewModel.setIsEnabled(true)
 
         }
     }
 
     private fun showAddLocationMarkerDialog() {
-        if (!_viewModel.noMarkerPlacedAlertShown) {
-            val dialog = AlertDialog.Builder(requireContext())
-                .apply {
-                    setMessage(R.string.select_poi)
-                    setPositiveButton(R.string.alert_dialog_ok)
-                    { dialog: DialogInterface, _ ->
-                        _viewModel.noMarkerPlacedAlertShown = true
-                        dialog.dismiss()
-                    }
-                }.create()
-            dialog.show()
-            val messageText = dialog.findViewById(android.R.id.message) as? TextView
-            messageText?.textSize = resources.getDimension(R.dimen.text_size_extra_small)
-            val okButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-            okButton.textSize = resources.getDimension(R.dimen.text_size_extra_small)
-        }
+        val dialog = AlertDialog.Builder(requireContext())
+            .apply {
+                setMessage(R.string.select_poi)
+                setPositiveButton(R.string.alert_dialog_ok)
+                { dialog: DialogInterface, _ ->
+                    dialog.dismiss()
+                }
+            }.create()
+        dialog.show()
+        val messageText = dialog.findViewById(android.R.id.message) as? TextView
+        messageText?.textSize = resources.getDimension(R.dimen.text_size_extra_small)
+        val okButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+        okButton.textSize = resources.getDimension(R.dimen.text_size_extra_small)
+
 
     }
 
@@ -228,6 +217,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             _viewModel.reminderSelectedLocationStr.value = marker?.title
             _viewModel.latitude.value = marker?.position?.latitude
             _viewModel.longitude.value = marker?.position?.longitude
+            _viewModel.setIsEnabled(false)
             findNavController().popBackStack()
         }
     }
