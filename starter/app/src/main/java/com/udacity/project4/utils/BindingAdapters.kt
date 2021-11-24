@@ -1,9 +1,13 @@
 package com.udacity.project4.utils
 
+import android.graphics.Color
 import android.view.View
+import android.widget.Button
+import androidx.core.content.ContextCompat.getColor
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.RecyclerView
+import com.udacity.project4.R
 import com.udacity.project4.base.BaseRecyclerViewAdapter
 
 
@@ -42,6 +46,17 @@ object BindingAdapters {
                 if (view.visibility == View.VISIBLE)
                     view.fadeOut()
             }
+        }
+    }
+    @BindingAdapter("android:isEnabled")
+    @JvmStatic
+    fun Button.enable(boolean:LiveData<Boolean?>){
+        isEnabled = boolean.value==true
+       if (boolean.value!=true){
+           setBackgroundColor(Color.GRAY)
+       }
+        else{
+            setBackgroundColor(resources.getColor(R.color.fui_bgFacebook))
         }
     }
 }

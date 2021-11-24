@@ -13,6 +13,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.fragment.findNavController
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.base.NavigationCommand
@@ -38,20 +39,7 @@ class SaveReminderFragment : BaseFragment() {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_save_reminder, container, false)
         setDisplayHomeAsUpEnabled(true)
-
-
-
         binding.viewModel = _viewModel
-
-        requestPermissionLauncher =
-            registerForActivityResult(
-                ActivityResultContracts.RequestPermission()
-            ) { isGranted: Boolean ->
-                if (isGranted) {
-                    //TODO call function to add a geofencing request
-                }
-            }
-
         return binding.root
     }
 
@@ -59,14 +47,27 @@ class SaveReminderFragment : BaseFragment() {
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        requestPermissionLauncher =
+            registerForActivityResult(
+                ActivityResultContracts.RequestPermission()
+            ) { isGranted:Boolean ->
+                if (isGranted){
+                    saveReminder()
+                }
+            }
         binding.lifecycleOwner = this
-        binding.addLocation.setOnClickListener {
-            //            Navigate to another fragment to get the user location
-            _viewModel.navigationCommand.value =
-                NavigationCommand.To(SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment())
-        }
+        binding.saveReminderFragment = this
 
-        binding.saveReminder.setOnClickListener {
+    }
+
+    fun addLocation() {
+        //            Navigate to another fragment to get the user location
+        _viewModel.navigationCommand.value =
+            NavigationCommand.To(SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment())
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    fun saveReminder() {
             val title = _viewModel.reminderTitle.value
             val description = _viewModel.reminderDescription.value
             val location = _viewModel.reminderSelectedLocationStr.value
@@ -76,13 +77,9 @@ class SaveReminderFragment : BaseFragment() {
             val reminderDataItem = ReminderDataItem(
                 title, description, location, latitude, longitude
             )
-            grantBackgroundPermission()
             _viewModel.validateAndSaveReminder(reminderDataItem)
 
-//            TODO: use the user entered reminder details to:
-//             1) add a geofencing request
-//             2) save the reminder to the local db
-        }
+
     }
 
     override fun onDestroy() {
@@ -93,7 +90,7 @@ class SaveReminderFragment : BaseFragment() {
 
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    private fun grantBackgroundPermission() {
+     fun checkBackgroundPermission() {
         val backgroundPermissionGranted = ContextCompat.checkSelfPermission(
             requireContext(),
             Manifest.permission.ACCESS_BACKGROUND_LOCATION
@@ -101,17 +98,18 @@ class SaveReminderFragment : BaseFragment() {
         when {
             runningQOrLater -> {
                 if (backgroundPermissionGranted) {
-                    return
+                    saveReminder()
                 } else {
-                    requestBackGroundPermission()
+                    requestBackgroundPermission()
                 }
 
             }
 
         }
     }
+
     @RequiresApi(Build.VERSION_CODES.Q)
-    private fun requestBackGroundPermission() {
+    private fun requestBackgroundPermission() {
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.background_location_permission_title)
             .setMessage(R.string.background_location_permission_message)
@@ -119,6 +117,7 @@ class SaveReminderFragment : BaseFragment() {
                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
             }
             .setNegativeButton(R.string.no) { dialog, _ ->
+                findNavController().popBackStack()
                 dialog.dismiss()
             }
             .create()

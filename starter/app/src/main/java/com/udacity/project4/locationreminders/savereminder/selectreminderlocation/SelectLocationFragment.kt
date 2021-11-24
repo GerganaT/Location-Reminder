@@ -46,7 +46,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             DataBindingUtil.inflate(inflater, R.layout.fragment_select_location, container, false)
         binding.selectLocationFragment = this
         binding.lifecycleOwner = this
-
+        binding.viewModel = _viewModel
         setHasOptionsMenu(true)
         setDisplayHomeAsUpEnabled(true)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
@@ -60,6 +60,12 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                     setupMap()
                 }
             }
+           _viewModel.isMarkerNull.observe(viewLifecycleOwner,{
+            if (it!=null){
+                _viewModel.setIsEnabled(true)
+            }
+        })
+
 
         return binding.root
     }
@@ -75,7 +81,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             -> {
                 map.isMyLocationEnabled = true
                 setupMap()
-
             }
             shouldShowRequestPermissionRationale(foregroundLocationPermission) -> {
                 showLocationPermissionEducationalUI(foregroundLocationPermission)
@@ -83,21 +88,18 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             }
 
             else -> {
-
+                _viewModel.setIsEnabled(false)
                 showLocationPermissionEducationalUI(foregroundLocationPermission)
             }
         }
     }
 
     private fun showLocationPermissionEducationalUI(locationPermission: String) {
-        if (_viewModel.locationTrackingAlreadyDenied) {
-            return
-        }
         val dialog = AlertDialog.Builder(requireContext())
             .apply {
                 setMessage(R.string.permission_explanation)
                 setNegativeButton(R.string.alert_dialog_deny) { dialog: DialogInterface, _ ->
-                    _viewModel.locationTrackingAlreadyDenied = true
+                    findNavController().popBackStack()
                     dialog.dismiss()
                 }
                 setPositiveButton(R.string.alert_dialog_allow_button)
@@ -168,7 +170,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     private fun onRandomLocationClicked(map: GoogleMap) {
         map.setOnMapLongClickListener { latLong: LatLng ->
-
             val coordinates = String.format(
                 Locale.getDefault(),
                 getString(R.string.lat_long_snippet),
@@ -181,6 +182,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                     .title(coordinates)
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
             )
+            _viewModel.setIsMarkerNull(marker)
 
 
         }
@@ -196,6 +198,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             )
             marker = poiMarker
             poiMarker?.showInfoWindow()
+            _viewModel.setIsMarkerNull(marker)
 
         }
     }
@@ -226,13 +229,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             _viewModel.latitude.value = marker?.position?.latitude
             _viewModel.longitude.value = marker?.position?.longitude
             findNavController().popBackStack()
-
-        } else {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.no_marker_placed),
-                Toast.LENGTH_SHORT
-            ).show()
         }
     }
 

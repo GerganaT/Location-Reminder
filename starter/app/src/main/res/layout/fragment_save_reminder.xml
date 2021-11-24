@@ -8,16 +8,6 @@
         android:layout_height="match_parent"
         android:background="@color/white">
 
-        <ImageView
-            android:id="@+id/locationImage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@+id/selectedLocation"
-            app:layout_constraintEnd_toStartOf="@+id/selectLocation"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/reminderDescription"
-            app:srcCompat="@drawable/ic_location" />
-
         <EditText
             android:id="@+id/reminderTitle"
             android:layout_width="match_parent"
@@ -41,6 +31,16 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/reminderTitle" />
+
+        <ImageView
+            android:id="@+id/locationImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/selectedLocation"
+            app:layout_constraintEnd_toStartOf="@+id/selectLocation"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/reminderDescription"
+            app:srcCompat="@drawable/ic_location" />
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -86,7 +86,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/margin_normal"
             android:fadeVisible="@{!viewModel.showLoading.booleanValue()}"
-
+            android:onClick="@{() -> saveReminderFragment.checkBackgroundPermission()}"
             app:fabSize="normal"
             app:layout_anchorGravity="bottom|right|end"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -99,6 +99,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/margin_normal"
             android:clickable="true"
+            android:onClick="@{() -> saveReminderFragment.addLocation()}"
             android:scaleType="fitXY"
             app:backgroundTint="@color/colorPrimary"
             app:fabSize="normal"
@@ -113,5 +114,9 @@
         <variable
             name="viewModel"
             type="com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel" />
+
+        <variable
+            name="saveReminderFragment"
+            type="com.udacity.project4.locationreminders.savereminder.SaveReminderFragment" />
     </data>
 </layout>

@@ -6,7 +6,9 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.util.Log
 import android.view.View
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.BindingAdapter
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -66,3 +68,4 @@ fun View.fadeOut() {
         }
     })
 }
+

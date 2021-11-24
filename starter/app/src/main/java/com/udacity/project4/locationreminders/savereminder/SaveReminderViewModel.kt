@@ -3,8 +3,8 @@ package com.udacity.project4.locationreminders.savereminder
 import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.PointOfInterest
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseViewModel
@@ -22,9 +22,20 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
     val selectedPOI = MutableLiveData<PointOfInterest>()
     val latitude = MutableLiveData<Double>()
     val longitude = MutableLiveData<Double>()
+    private val _isEnabled = MutableLiveData<Boolean>()
+    val isEnabled: LiveData<Boolean>
+        get() = _isEnabled
+  private  val _isMarkerNull= MutableLiveData<Marker>()
+    val isMarkerNull:LiveData<Marker>
+    get() = _isMarkerNull
     var noMarkerPlacedAlertShown: Boolean = false
-    var locationTrackingAlreadyDenied: Boolean = false
 
+    fun setIsMarkerNull(marker: Marker?){
+        _isMarkerNull.value = marker
+    }
+    fun setIsEnabled(boolean: Boolean) {
+        _isEnabled.value = boolean
+    }
 
     /**
      * Clear the live data objects to start fresh next time the view model gets called

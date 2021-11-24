@@ -6,6 +6,9 @@
         <variable
             name="selectLocationFragment"
             type="com.udacity.project4.locationreminders.savereminder.selectreminderlocation.SelectLocationFragment" />
+        <variable
+            name="viewModel"
+            type="com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -28,6 +31,7 @@
             android:layout_height="wrap_content"
             android:background="@color/fui_bgFacebook"
             android:text="@string/save"
+            android:isEnabled="@{viewModel.isEnabled}"
             android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
