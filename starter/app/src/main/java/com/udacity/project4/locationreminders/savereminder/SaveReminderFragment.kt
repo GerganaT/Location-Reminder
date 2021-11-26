@@ -43,8 +43,6 @@ class SaveReminderFragment : BaseFragment() {
         return binding.root
     }
 
-
-    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         requestPermissionLauncher =
@@ -52,7 +50,7 @@ class SaveReminderFragment : BaseFragment() {
                 ActivityResultContracts.RequestPermission()
             ) { isGranted:Boolean ->
                 if (isGranted){
-                    saveReminder()
+                 saveReminder()
                 }
             }
         binding.lifecycleOwner = this
@@ -66,18 +64,23 @@ class SaveReminderFragment : BaseFragment() {
             NavigationCommand.To(SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment())
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
     fun saveReminder() {
-            val title = _viewModel.reminderTitle.value
-            val description = _viewModel.reminderDescription.value
-            val location = _viewModel.reminderSelectedLocationStr.value
-            val latitude = _viewModel.latitude.value
-            val longitude = _viewModel.longitude.value
+           if  (runningQOrLater && !checkBackgroundPermission()){
+               requestBackgroundPermission()
+           }
+        else{
+               val title = _viewModel.reminderTitle.value
+               val description = _viewModel.reminderDescription.value
+               val location = _viewModel.reminderSelectedLocationStr.value
+               val latitude = _viewModel.latitude.value
+               val longitude = _viewModel.longitude.value
 
-            val reminderDataItem = ReminderDataItem(
-                title, description, location, latitude, longitude
-            )
-            _viewModel.validateAndSaveReminder(reminderDataItem)
+               val reminderDataItem = ReminderDataItem(
+                   title, description, location, latitude, longitude
+               )
+               _viewModel.validateAndSaveReminder(reminderDataItem)
+        }
+
 
 
     }
@@ -90,23 +93,10 @@ class SaveReminderFragment : BaseFragment() {
 
 
     @RequiresApi(Build.VERSION_CODES.Q)
-     fun checkBackgroundPermission() {
-        val backgroundPermissionGranted = ContextCompat.checkSelfPermission(
+     fun checkBackgroundPermission() = ContextCompat.checkSelfPermission(
             requireContext(),
             Manifest.permission.ACCESS_BACKGROUND_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
-        when {
-            runningQOrLater -> {
-                if (backgroundPermissionGranted) {
-                    saveReminder()
-                } else {
-                    requestBackgroundPermission()
-                }
-
-            }
-
-        }
-    }
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun requestBackgroundPermission() {
