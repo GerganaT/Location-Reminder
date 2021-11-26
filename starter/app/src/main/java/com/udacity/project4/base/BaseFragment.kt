@@ -3,6 +3,7 @@ package com.udacity.project4.base
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.NavDirections
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 
