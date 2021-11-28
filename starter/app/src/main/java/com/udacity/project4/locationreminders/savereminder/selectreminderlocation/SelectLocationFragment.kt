@@ -65,6 +65,9 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 if (isGranted) {
                     setupMap()
                 }
+                else{
+                    //TODO handle denial properly ,handle also deny and don't ask
+                }
             }
 
         return binding.root
@@ -99,7 +102,12 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             .apply {
                 setMessage(R.string.permission_explanation)
                 setNegativeButton(R.string.alert_dialog_deny) { dialog: DialogInterface, _ ->
-                    findNavController().popBackStack()
+                    Snackbar.make(
+                        binding.root,
+                        R.string.location_required_error, Snackbar.LENGTH_INDEFINITE
+                    ).setAction(android.R.string.ok) {
+                        showLocationPermissionEducationalUI(foregroundLocationPermission)
+                    }.show()
                     dialog.dismiss()
                 }
                 setPositiveButton(R.string.alert_dialog_allow_button)

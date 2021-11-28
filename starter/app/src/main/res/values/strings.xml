@@ -51,8 +51,8 @@
     <string name="my_location">My Location</string>
     <string name="no">No,thanks.</string>
     <string name="background_location_permission_title">Allow background location tracking?</string>
-    <string name="background_location_permission_message">Please allow background location tracking in order to
-        be able to save reminders and receive notifications.</string>
+    <string name="background_location_permission_message">Please allow background location tracking
+        all the time to save reminders and receive notifications.</string>
     <string name="alert_dialog_location_not_selected">No location selected</string>
     <string name="alert_dialog_exit_map_warning">You are about to exit without saving location. Are you sure?</string>
     <string name="alert_dialog_exit_button">exit</string>
