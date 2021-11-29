@@ -3,7 +3,6 @@ package com.udacity.project4.locationreminders.savereminder.selectreminderlocati
 
 import android.Manifest
 import android.content.DialogInterface
-import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.os.Bundle
@@ -16,10 +15,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.common.api.ResolvableApiException
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -33,7 +28,6 @@ import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import org.koin.android.ext.android.inject
 import java.util.*
-
 
 
 class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
@@ -56,6 +50,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         binding.viewModel = _viewModel
         setHasOptionsMenu(true)
         setDisplayHomeAsUpEnabled(true)
+        //TODO upon going back any eventual snackbars are dismissed.
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
         requestPermissionLauncher =
@@ -64,13 +59,22 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             ) { isGranted: Boolean ->
                 if (isGranted) {
                     setupMap()
-                }
-                else{
-                    //TODO handle denial properly ,handle also deny and don't ask
+                } else {
+                    showLocationPermissionNotGrantedSnackbar()
                 }
             }
 
         return binding.root
+    }
+
+
+    private fun showLocationPermissionNotGrantedSnackbar() {
+        Snackbar.make(
+            binding.root,
+            R.string.permission_denied_explanation, Snackbar.LENGTH_INDEFINITE
+        ).setAction(android.R.string.ok) {
+            showLocationPermissionEducationalUI(foregroundLocationPermission)
+        }.show()
     }
 
 
@@ -90,6 +94,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
             }
 
+
             else -> {
                 _viewModel.setIsEnabled(false)
                 showLocationPermissionEducationalUI(foregroundLocationPermission)
@@ -102,12 +107,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             .apply {
                 setMessage(R.string.permission_explanation)
                 setNegativeButton(R.string.alert_dialog_deny) { dialog: DialogInterface, _ ->
-                    Snackbar.make(
-                        binding.root,
-                        R.string.location_required_error, Snackbar.LENGTH_INDEFINITE
-                    ).setAction(android.R.string.ok) {
-                        showLocationPermissionEducationalUI(foregroundLocationPermission)
-                    }.show()
+                    showLocationPermissionNotGrantedSnackbar()
                     dialog.dismiss()
                 }
                 setPositiveButton(R.string.alert_dialog_allow_button)
@@ -237,7 +237,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             findNavController().popBackStack()
         }
     }
-
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

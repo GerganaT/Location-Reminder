@@ -89,5 +89,5 @@ class ReminderListFragment : BaseFragment() {
 //        display logout as menu item
         inflater.inflate(R.menu.main_menu, menu)
     }
-
+//TODO override back button behavior to show warning and logout on logout pressed.
 }
