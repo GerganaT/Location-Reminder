@@ -12,7 +12,7 @@ android {
     def googleMapApiKey = properties.getProperty('MAPS_API_KEY_DEBUG')
 
     compileSdkVersion rootProject.compileSdkVersion
-    buildToolsVersion "29.0.2"
+    buildToolsVersion "29.0.3"
     android.defaultConfig.vectorDrawables.useSupportLibrary = true
     defaultConfig {
         applicationId "com.udacity.project4"

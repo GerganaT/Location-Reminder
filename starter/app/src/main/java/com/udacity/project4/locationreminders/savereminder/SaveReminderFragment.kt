@@ -40,7 +40,7 @@ class SaveReminderFragment : BaseFragment() {
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var enableGPSLauncher: ActivityResultLauncher<IntentSenderRequest>
     private val TAG = SaveReminderFragment::class.java.simpleName
-    private var backgroundPermissionSnackbar:Snackbar?=null
+    private var backgroundPermissionSnackbar: Snackbar? = null
     private val backgroundPermission = Manifest.permission.ACCESS_BACKGROUND_LOCATION
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,7 +55,7 @@ class SaveReminderFragment : BaseFragment() {
 
     }
 
-//TODO handle denied and dont ask again - also for select location
+    //TODO handle denied and dont ask again - also for select location
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         requestPermissionLauncher =
@@ -64,9 +64,8 @@ class SaveReminderFragment : BaseFragment() {
             ) { isGranted ->
                 if (isGranted) {
                     checkDeviceLocationSettingsAndStartGeofence()
-                }
-                else{
-                    if (runningQOrLater){
+                } else {
+                    if (runningQOrLater) {
                         showBackgroundPermissionNotGrantedSnackbar()
                     }
                 }
@@ -101,16 +100,14 @@ class SaveReminderFragment : BaseFragment() {
 
     fun saveReminder() {
         checkNoBlankFields()
-            if (checkNoBlankFields()){
-                if (runningQOrLater && !checkBackgroundPermission()) {
-                    requestBackgroundPermission()
-                } else {
-                    checkDeviceLocationSettingsAndStartGeofence()
+        if (checkNoBlankFields()) {
+            if (runningQOrLater && !checkBackgroundPermission()) {
+                requestBackgroundPermission()
+            } else {
+                checkDeviceLocationSettingsAndStartGeofence()
 
-                }
             }
-
-
+        }
 
 
     }
@@ -162,34 +159,31 @@ class SaveReminderFragment : BaseFragment() {
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun requestBackgroundPermission() {
-            AlertDialog.Builder(requireContext())
-                .setTitle(R.string.background_location_permission_title)
-                .setMessage(R.string.background_location_permission_message)
-                .setPositiveButton(R.string.alert_dialog_allow_button) { _, _ ->
-                    requestPermissionLauncher.launch(backgroundPermission)
-                }
-                .setNegativeButton(R.string.no) { dialog, _ ->
-                    showBackgroundPermissionNotGrantedSnackbar()
-                    dialog.dismiss()
-                }
-                .create()
-                .show()
-
-
-
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.background_location_permission_title)
+            .setMessage(R.string.background_location_permission_message)
+            .setPositiveButton(R.string.alert_dialog_allow_button) { _, _ ->
+                requestPermissionLauncher.launch(backgroundPermission)
+            }
+            .setNegativeButton(R.string.no) { dialog, _ ->
+                showBackgroundPermissionNotGrantedSnackbar()
+                dialog.dismiss()
+            }
+            .create()
+            .show()
 
 
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun showBackgroundPermissionNotGrantedSnackbar() {
-            backgroundPermissionSnackbar = Snackbar.make(
-                binding.root,
-                R.string.background_permission_denied_explanation, Snackbar.LENGTH_INDEFINITE
-            ).setAction(android.R.string.ok) {
-                requestBackgroundPermission()
-            }
-            backgroundPermissionSnackbar?.show()
+        backgroundPermissionSnackbar = Snackbar.make(
+            binding.root,
+            R.string.background_permission_denied_explanation, Snackbar.LENGTH_INDEFINITE
+        ).setAction(android.R.string.ok) {
+            requestBackgroundPermission()
+        }
+        backgroundPermissionSnackbar?.show()
 
     }
 
