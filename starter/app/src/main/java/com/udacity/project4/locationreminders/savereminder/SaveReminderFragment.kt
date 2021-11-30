@@ -17,7 +17,6 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import androidx.navigation.fragment.findNavController
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
@@ -41,8 +40,8 @@ class SaveReminderFragment : BaseFragment() {
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var enableGPSLauncher: ActivityResultLauncher<IntentSenderRequest>
     private val TAG = SaveReminderFragment::class.java.simpleName
-
-
+    private var backgroundPermissionSnackbar:Snackbar?=null
+    private val backgroundPermission = Manifest.permission.ACCESS_BACKGROUND_LOCATION
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -56,6 +55,7 @@ class SaveReminderFragment : BaseFragment() {
 
     }
 
+//TODO handle denied and dont ask again - also for select location
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         requestPermissionLauncher =
@@ -65,6 +65,13 @@ class SaveReminderFragment : BaseFragment() {
                 if (isGranted) {
                     checkDeviceLocationSettingsAndStartGeofence()
                 }
+                else{
+                    if (runningQOrLater){
+                        showBackgroundPermissionNotGrantedSnackbar()
+                    }
+                }
+
+
             }
 
         enableGPSLauncher =
@@ -93,22 +100,24 @@ class SaveReminderFragment : BaseFragment() {
     }
 
     fun saveReminder() {
-        checkBlankFields()
-        if (checkBlankFields()) {
-            if (runningQOrLater && !checkBackgroundPermission()) {
-                requestBackgroundPermission()
-            } else {
-                checkDeviceLocationSettingsAndStartGeofence()
+        checkNoBlankFields()
+            if (checkNoBlankFields()){
+                if (runningQOrLater && !checkBackgroundPermission()) {
+                    requestBackgroundPermission()
+                } else {
+                    checkDeviceLocationSettingsAndStartGeofence()
 
+                }
             }
-        }
+
+
 
 
     }
 
     // This ensures that the user will receive a warning to add location data if he clicks the
     //save button at the very first moment he accesses the SaveReminder screen.
-    private fun checkBlankFields(): Boolean {
+    private fun checkNoBlankFields(): Boolean {
         if (binding.reminderTitle.text.isNullOrEmpty()) {
 
             Snackbar.make(
@@ -133,6 +142,10 @@ class SaveReminderFragment : BaseFragment() {
 
     }
 
+    override fun onStop() {
+        backgroundPermissionSnackbar?.dismiss()
+        super.onStop()
+    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -149,19 +162,35 @@ class SaveReminderFragment : BaseFragment() {
 
     @RequiresApi(Build.VERSION_CODES.Q)
     private fun requestBackgroundPermission() {
-        AlertDialog.Builder(requireContext())
-            .setTitle(R.string.background_location_permission_title)
-            .setMessage(R.string.background_location_permission_message)
-            .setPositiveButton(R.string.alert_dialog_allow_button) { _, _ ->
-                requestPermissionLauncher.launch(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+            AlertDialog.Builder(requireContext())
+                .setTitle(R.string.background_location_permission_title)
+                .setMessage(R.string.background_location_permission_message)
+                .setPositiveButton(R.string.alert_dialog_allow_button) { _, _ ->
+                    requestPermissionLauncher.launch(backgroundPermission)
+                }
+                .setNegativeButton(R.string.no) { dialog, _ ->
+                    showBackgroundPermissionNotGrantedSnackbar()
+                    dialog.dismiss()
+                }
+                .create()
+                .show()
+
+
+
+
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun showBackgroundPermissionNotGrantedSnackbar() {
+            backgroundPermissionSnackbar = Snackbar.make(
+                binding.root,
+                R.string.background_permission_denied_explanation, Snackbar.LENGTH_INDEFINITE
+            ).setAction(android.R.string.ok) {
+                requestBackgroundPermission()
             }
-            .setNegativeButton(R.string.no) { dialog, _ ->
-                findNavController().popBackStack()
-                dialog.dismiss()
-            }
-            //TODO instead returning to reminders' list show snackbar with an  ok option
-            .create()
-            .show()
+            backgroundPermissionSnackbar?.show()
+
     }
 
     private fun checkDeviceLocationSettingsAndStartGeofence() {

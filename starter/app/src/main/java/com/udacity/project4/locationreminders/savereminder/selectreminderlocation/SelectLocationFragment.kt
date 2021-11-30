@@ -40,6 +40,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var foregroundLocationPermission: String
     private var marker: Marker? = null
+    private  var snackbar: Snackbar?=null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -50,7 +51,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         binding.viewModel = _viewModel
         setHasOptionsMenu(true)
         setDisplayHomeAsUpEnabled(true)
-        //TODO upon going back any eventual snackbars are dismissed.
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
         requestPermissionLauncher =
@@ -67,14 +67,20 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         return binding.root
     }
 
+    override fun onStop() {
+        snackbar?.dismiss()
+        super.onStop()
+    }
 
     private fun showLocationPermissionNotGrantedSnackbar() {
-        Snackbar.make(
+      snackbar =  Snackbar.make(
             binding.root,
             R.string.permission_denied_explanation, Snackbar.LENGTH_INDEFINITE
         ).setAction(android.R.string.ok) {
             showLocationPermissionEducationalUI(foregroundLocationPermission)
-        }.show()
+        }
+          snackbar?.show()
+
     }
 
 
