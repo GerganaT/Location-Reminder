@@ -25,14 +25,7 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
     val isEnabled: LiveData<Boolean>
         get() = _isEnabled
 
-    private val _locationIsEnabled = MutableLiveData<Boolean>()
-    val locationIsEnabled: LiveData<Boolean>
-        get() = _locationIsEnabled
 
-
-    fun setLocationIsEnabled(boolean: Boolean) {
-        _locationIsEnabled.value = boolean
-    }
     /**
      * Enable/disable the "save"-button in the map view screen if the user granted location tracking
      * permission and created a marker.

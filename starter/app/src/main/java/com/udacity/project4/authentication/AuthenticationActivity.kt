@@ -5,11 +5,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
-import androidx.appcompat.app.AlertDialog
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import com.firebase.ui.auth.AuthMethodPickerLayout
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
@@ -36,8 +34,9 @@ class AuthenticationActivity : AppCompatActivity() {
             DataBindingUtil.setContentView(this,R.layout.activity_authentication)
         binding.lifecycleOwner = this
         binding.authenticationActivity = this
-        val authenticationView:AuthenticationViewModel by viewModel()
-        authenticationViewModel = authenticationView
+        val authenticationViewModel1:AuthenticationViewModel by viewModel()
+        authenticationViewModel = authenticationViewModel1
+        //TODO optional if user is auth'ed go directly to RemindersActivity
          signInLauncher = registerForActivityResult(
             FirebaseAuthUIActivityResultContract()
         ) { res ->
