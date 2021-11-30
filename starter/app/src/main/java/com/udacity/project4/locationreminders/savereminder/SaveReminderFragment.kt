@@ -218,9 +218,9 @@ class SaveReminderFragment : BaseFragment() {
     }
 
 
-//    private fun addGeofence() {
-//        TODO("Not yet implemented")
-//    }
+    private fun addGeofence() {
+        TODO("Not yet implemented")
+    }
 
     private fun storeReminderData() {
         val title = _viewModel.reminderTitle.value
@@ -232,6 +232,7 @@ class SaveReminderFragment : BaseFragment() {
         val reminderDataItem = ReminderDataItem(
             title, description, location, latitude, longitude
         )
+        addGeofence()
         _viewModel.validateAndSaveReminder(reminderDataItem)
     }
 
