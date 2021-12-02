@@ -47,7 +47,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_select_location, container, false)
         binding.selectLocationFragment = this
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = _viewModel
         setHasOptionsMenu(true)
         setDisplayHomeAsUpEnabled(true)

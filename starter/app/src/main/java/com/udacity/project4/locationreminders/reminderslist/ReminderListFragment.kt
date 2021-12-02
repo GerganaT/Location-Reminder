@@ -41,7 +41,7 @@ class ReminderListFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = viewLifecycleOwner
         setupRecyclerView()
         binding.addReminderFAB.setOnClickListener {
             navigateToAddReminder()
@@ -73,15 +73,14 @@ class ReminderListFragment : BaseFragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-         R.id.logout -> {
-             AuthUI.getInstance().signOut(requireContext())
-            requireActivity().finish()
-         }
+            R.id.logout -> {
+                AuthUI.getInstance().signOut(requireContext())
+                requireActivity().finish()
+            }
         }
         return super.onOptionsItemSelected(item)
 
     }
-
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -89,5 +88,4 @@ class ReminderListFragment : BaseFragment() {
 //        display logout as menu item
         inflater.inflate(R.menu.main_menu, menu)
     }
-//TODO override back button behavior to show warning and logout on logout pressed.
 }
