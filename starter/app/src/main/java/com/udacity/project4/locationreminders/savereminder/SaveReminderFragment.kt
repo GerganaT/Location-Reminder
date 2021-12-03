@@ -37,6 +37,8 @@ import org.koin.android.ext.android.inject
 private val runningQOrLater = Build.VERSION.SDK_INT >=
         Build.VERSION_CODES.Q
 const val GEOFENCE_RADIUS_IN_METERS = 100f
+// set longer responsiveness to check for geofence entry alerts less often,reducing battery drainage
+const val NOTIFICATION_RESPONSIVENESS_IN_MS = 300_000L
 class SaveReminderFragment : BaseFragment() {
     //Get the view model this time as a single to be shared with the another fragment
     override val _viewModel: SaveReminderViewModel by inject()
@@ -251,6 +253,7 @@ class SaveReminderFragment : BaseFragment() {
                 )
                 .setExpirationDuration(Geofence.NEVER_EXPIRE)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+                .setNotificationResponsiveness(NOTIFICATION_RESPONSIVENESS_IN_MS.toInt())
                 .build()
 
             val geofenceRequest = GeofencingRequest.Builder()
@@ -261,8 +264,6 @@ class SaveReminderFragment : BaseFragment() {
             geofencingClient.addGeofences(geofenceRequest,geofencePendingIntent).run {
                 addOnSuccessListener {
                     Log.i("Add Geofence", geofence.requestId)
-                    //TODO save the geofence id
-                  //  viewModel.geofenceActivated()
                 }
                 addOnFailureListener {
                     if ((it.message != null)) {
@@ -289,7 +290,7 @@ class SaveReminderFragment : BaseFragment() {
     }
     companion object {
         internal const val ACTION_GEOFENCE_EVENT =
-            "SaveReminderFragment.action.ACTION_GEOFENCE_EVENT"
+            "SaveReminderFragment.savereminder.action.ACTION_GEOFENCE_EVENT"
     }
 
 }
