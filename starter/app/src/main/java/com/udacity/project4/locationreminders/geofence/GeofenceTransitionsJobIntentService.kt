@@ -18,16 +18,18 @@ import kotlin.coroutines.CoroutineContext
 
 private const val TAG = "GeofenceIntentService"
 
+var reminderDataItem: ReminderDataItem? = null
+
 class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
 
     private var coroutineJob: Job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + coroutineJob
 
+
     companion object {
         private const val JOB_ID = 573
 
-        //        TODO: call this to start the JobIntentService to handle the geofencing transition events
         fun enqueueWork(context: Context, intent: Intent) {
             enqueueWork(
                 context,
@@ -38,9 +40,7 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
     }
 
     override fun onHandleWork(intent: Intent) {
-        //TODO: handle the geofencing transition events and
-        // send a notification to the user when he enters the geofence area
-        //TODO call @sendNotification
+
         if (intent.action == SaveReminderFragment.ACTION_GEOFENCE_EVENT) {
             val geofencingEvent = GeofencingEvent.fromIntent(intent)
             if (geofencingEvent.hasError()) {
@@ -65,7 +65,6 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
         }
     }
 
-    //TODO: get the request id of the current geofence
     private fun sendNotification(requestId: String) {
 
 
@@ -77,19 +76,21 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
             val result = remindersLocalRepository.getReminder(requestId)
             if (result is Result.Success<ReminderDTO>) {
                 val reminderDTO = result.data
+                reminderDataItem = ReminderDataItem(
+                    reminderDTO.title,
+                    reminderDTO.description,
+                    reminderDTO.location,
+                    reminderDTO.latitude,
+                    reminderDTO.longitude,
+                    reminderDTO.id
+                )
                 //send a notification to the user with the reminder details
                 sendNotification(
-                    this@GeofenceTransitionsJobIntentService, ReminderDataItem(
-                        reminderDTO.title,
-                        reminderDTO.description,
-                        reminderDTO.location,
-                        reminderDTO.latitude,
-                        reminderDTO.longitude,
-                        reminderDTO.id
-                    )
+                    this@GeofenceTransitionsJobIntentService, reminderDataItem as ReminderDataItem
                 )
             }
         }
     }
+
 
 }

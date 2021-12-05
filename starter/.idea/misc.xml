@@ -4,6 +4,8 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Location-Reminder/starter/app/src/main/res/drawable/baseline_edit_location_alt_20.xml" value="0.3484375" />
+        <entry key="..\:/Location-Reminder/starter/app/src/main/res/drawable/ic_baseline_add_location_alt_24.xml" value="0.43854166666666666" />
+        <entry key="..\:/Location-Reminder/starter/app/src/main/res/drawable/ic_baseline_class_24.xml" value="0.43854166666666666" />
         <entry key="..\:/Location-Reminder/starter/app/src/main/res/drawable/ic_location.xml" value="0.3158974358974359" />
         <entry key="..\:/Location-Reminder/starter/app/src/main/res/layout/activity_authentication.xml" value="0.25" />
         <entry key="..\:/Location-Reminder/starter/app/src/main/res/layout/activity_maps.xml" value="0.2717391304347826" />
