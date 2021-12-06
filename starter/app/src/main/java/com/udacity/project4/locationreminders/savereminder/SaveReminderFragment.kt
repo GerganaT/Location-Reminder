@@ -31,14 +31,14 @@ import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentSaveReminderBinding
 import com.udacity.project4.locationreminders.geofence.GeofenceBroadcastReceiver
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
+import com.udacity.project4.utils.Constants.GEOFENCE_RADIUS_IN_METERS
+import com.udacity.project4.utils.Constants.NOTIFICATION_RESPONSIVENESS_IN_MS
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import org.koin.android.ext.android.inject
 
 private val runningQOrLater = Build.VERSION.SDK_INT >=
         Build.VERSION_CODES.Q
-const val GEOFENCE_RADIUS_IN_METERS = 100f
-// set longer responsiveness to check for geofence entry alerts less often,reducing battery drainage
-const val NOTIFICATION_RESPONSIVENESS_IN_MS = 300_000L
+
 class SaveReminderFragment : BaseFragment() {
     //Get the view model this time as a single to be shared with the another fragment
     override val _viewModel: SaveReminderViewModel by inject()

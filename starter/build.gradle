@@ -51,7 +51,7 @@ ext {
     constraintVersion = '2.1.2'
     dexMakerVersion = '2.12.1'
     coroutinesVersion = '1.5.0'
-    roomVersion = '2.4.0-beta02'
+    roomVersion = '2.4.0-rc01'
     koinVersion = '2.0.1'
     truthVersion = '0.44'
     junitVersion = '4.13.2'
