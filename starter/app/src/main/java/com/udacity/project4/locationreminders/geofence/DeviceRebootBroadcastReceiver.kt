@@ -67,23 +67,24 @@ class DeviceRebootBroadcastReceiver : BroadcastReceiver(), CoroutineScope {
     }
 
     private fun addGeofences() {
+ //TODO add separate service for this broadcast receiver?
 
-        CoroutineScope(coroutineContext).launch {
-            val remindersResult = remindersRepository.getReminders()
-            if (remindersResult is Result.Success) {
-                remindersResult.data.forEach { reminderDTO ->
-                    reRegisterGeofence(
-                        reminderDTO,
-                        TAG,
-                        geofencePendingIntent,
-                        geofencingClient as GeofencingClient,
-                        cntxt as Context
-
-                    )
-
-                }
-            }
-        }
+//        CoroutineScope(coroutineContext).launch {
+//            val remindersResult = remindersRepository.getReminders()
+//            if (remindersResult is Result.Success) {
+//                remindersResult.data.forEach { reminderDTO ->
+//                    reRegisterGeofence(
+//                        reminderDTO,
+//                        TAG,
+//                        geofencePendingIntent,
+//                        geofencingClient as GeofencingClient,
+//                        cntxt as Context
+//
+//                    )
+//
+//                }
+//            }
+//        }
 
     }
 }

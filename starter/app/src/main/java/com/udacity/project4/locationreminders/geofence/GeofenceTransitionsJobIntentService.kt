@@ -20,13 +20,9 @@ private const val TAG = "GeofenceIntentService"
 
 var reminderDataItem: ReminderDataItem? = null
 
-lateinit var remindersRepository:ReminderDataSource
-
 class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
-    val remindersLocalRepository: ReminderDataSource by inject()
-    init {
-        remindersRepository = remindersLocalRepository
-    }
+
+
 
 
 
@@ -75,7 +71,7 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
 
     private fun sendNotification(requestId: String) {
         //Get the local repository instance
-      //  val remindersLocalRepository: ReminderDataSource by inject()
+        val remindersLocalRepository: ReminderDataSource by inject()
 //        Interaction to the repository has to be through a coroutine scope
         CoroutineScope(coroutineContext).launch(SupervisorJob()) {
             //get the reminder with the request id

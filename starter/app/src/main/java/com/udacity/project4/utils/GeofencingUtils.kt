@@ -14,7 +14,7 @@ import com.udacity.project4.utils.Constants.NOTIFICATION_RESPONSIVENESS_IN_MS
 
 
 @SuppressLint("MissingPermission")
- fun reRegisterGeofence(
+fun reRegisterGeofence(
     reminderDTO: ReminderDTO? = null,
     tag: String,
     geofencePendingIntent: PendingIntent,
@@ -43,6 +43,7 @@ import com.udacity.project4.utils.Constants.NOTIFICATION_RESPONSIVENESS_IN_MS
         geofencingClient.addGeofences(geofenceRequest, geofencePendingIntent).run {
             addOnSuccessListener {
                 Log.i(tag, geofence.requestId)
+                Toast.makeText(cntxt, "reregistered with success!", Toast.LENGTH_SHORT).show()
             }
             addOnFailureListener {
                 if ((it.message != null)) {
