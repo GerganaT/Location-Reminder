@@ -42,8 +42,7 @@ fun reRegisterGeofence(
 
         geofencingClient.addGeofences(geofenceRequest, geofencePendingIntent).run {
             addOnSuccessListener {
-                Log.i(tag, geofence.requestId)
-                Toast.makeText(cntxt, "reregistered with success!", Toast.LENGTH_SHORT).show()
+                Log.i(tag,"Reregistered with success! with id: ${geofence.requestId}" )
             }
             addOnFailureListener {
                 if ((it.message != null)) {

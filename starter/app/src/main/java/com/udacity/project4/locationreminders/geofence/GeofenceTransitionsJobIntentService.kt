@@ -23,9 +23,6 @@ var reminderDataItem: ReminderDataItem? = null
 class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
 
 
-
-
-
     private var coroutineJob: Job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + coroutineJob
