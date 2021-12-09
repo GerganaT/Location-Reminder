@@ -31,6 +31,7 @@ import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentSaveReminderBinding
 import com.udacity.project4.locationreminders.geofence.GeofenceBroadcastReceiver
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
+import com.udacity.project4.utils.Constants.ACTION_GEOFENCE_EVENT
 import com.udacity.project4.utils.Constants.GEOFENCE_RADIUS_IN_METERS
 import com.udacity.project4.utils.Constants.NOTIFICATION_RESPONSIVENESS_IN_MS
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
@@ -290,10 +291,10 @@ class SaveReminderFragment : BaseFragment() {
       addGeofence(reminderDataItem)
         _viewModel.validateAndSaveReminder(reminderDataItem)
     }
-    companion object {
-        internal const val ACTION_GEOFENCE_EVENT =
-            "SaveReminderFragment.savereminder.action.ACTION_GEOFENCE_EVENT"
-    }
+//    companion object {
+//        internal const val ACTION_GEOFENCE_EVENT =
+//            "SaveReminderFragment.savereminder.action.ACTION_GEOFENCE_EVENT"
+//    }
 
 }
 

@@ -8,6 +8,7 @@ import com.google.android.gms.location.GeofencingClient
 import com.google.android.gms.location.LocationServices
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.Result
+import com.udacity.project4.utils.Constants
 import com.udacity.project4.utils.reRegisterGeofence
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -47,9 +48,9 @@ class DeviceRebootBroadcastReceiverService : JobIntentService(), CoroutineScope 
         val geofencingClient: GeofencingClient = LocationServices.getGeofencingClient(cntxt)
         val remindersLocalRepository: ReminderDataSource by inject()
         // A PendingIntent for the Broadcast Receiver that handles device reboot.
-        val rebootPendingIntent: PendingIntent by lazy {
-            val intent = Intent(cntxt, DeviceRebootBroadcastReceiver::class.java)
-            intent.action = Intent.ACTION_BOOT_COMPLETED
+        val geofencePendingIntent: PendingIntent by lazy {
+            val intent = Intent(cntxt, GeofenceBroadcastReceiver::class.java)
+            intent.action = Constants.ACTION_GEOFENCE_EVENT
             PendingIntent.getBroadcast(cntxt, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         }
         CoroutineScope(coroutineContext).launch {
@@ -59,7 +60,7 @@ class DeviceRebootBroadcastReceiverService : JobIntentService(), CoroutineScope 
                     reRegisterGeofence(
                         reminderDTO,
                         TAG,
-                        rebootPendingIntent,
+                        geofencePendingIntent,
                         geofencingClient,
                         cntxt
 
