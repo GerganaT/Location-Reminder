@@ -79,7 +79,7 @@ class SaveReminderFragment : BaseFragment() {
         cntxt = context
     }
 
-    //TODO handle denied and dont ask again - also for select location
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         requestPermissionLauncher =
@@ -291,11 +291,6 @@ class SaveReminderFragment : BaseFragment() {
       addGeofence(reminderDataItem)
         _viewModel.validateAndSaveReminder(reminderDataItem)
     }
-//    companion object {
-//        internal const val ACTION_GEOFENCE_EVENT =
-//            "SaveReminderFragment.savereminder.action.ACTION_GEOFENCE_EVENT"
-//    }
-
 }
 
 
