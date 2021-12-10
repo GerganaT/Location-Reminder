@@ -44,7 +44,6 @@ class AuthenticationActivity : AppCompatActivity() {
         }
     }
 
-
     private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
          resultCode = result.resultCode
         when(resultCode){

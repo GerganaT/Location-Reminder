@@ -63,5 +63,7 @@
         ,please allow location tracking next.</string>
     <string name="no_marker_placed">Pick up location first</string>
     <string name="geofence_added">Geofence added!</string>
+    <string name="reminder_menu_item_delete">Delete</string>
+    <string name="reminder_menu_item_edit">Edit</string>
 
 </resources>

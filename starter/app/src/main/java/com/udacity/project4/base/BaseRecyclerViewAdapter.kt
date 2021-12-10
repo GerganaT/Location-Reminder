@@ -1,12 +1,15 @@
 package com.udacity.project4.base
 
-import android.view.LayoutInflater
-import android.view.ViewGroup
+import android.util.Log
+import android.view.*
+import android.widget.Toast
 import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
+import com.udacity.project4.R
+import androidx.appcompat.widget.PopupMenu
 
 abstract class BaseRecyclerViewAdapter<T>(private val callback: ((item: T) -> Unit)? = null) :
     RecyclerView.Adapter<DataBindingViewHolder<T>>() {
@@ -26,17 +29,35 @@ abstract class BaseRecyclerViewAdapter<T>(private val callback: ((item: T) -> Un
 
         val binding = DataBindingUtil
             .inflate<ViewDataBinding>(layoutInflater, getLayoutRes(viewType), parent, false)
-
         binding.lifecycleOwner = getLifecycleOwner()
-
         return DataBindingViewHolder(binding)
     }
+
 
     override fun onBindViewHolder(holder: DataBindingViewHolder<T>, position: Int) {
         val item = getItem(position)
         holder.bind(item)
         holder.itemView.setOnClickListener {
             callback?.invoke(item)
+            val cntxt = holder.itemView.context
+            val popupMenu = PopupMenu(cntxt, holder.itemView)
+            popupMenu.inflate(R.menu.reminder_options)
+            popupMenu.gravity = Gravity.END
+            popupMenu.setOnMenuItemClickListener {
+                when (it.itemId) {
+                    R.id.edit_reminder -> {
+                        //TODO add implementation
+                        true
+                    }
+                    R.id.delete_reminder -> {
+                        //TODO add implementation
+                        true
+                    }
+                    else -> false
+                }
+            }
+            popupMenu.show()
+
         }
     }
 
