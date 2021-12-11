@@ -65,4 +65,11 @@ class RemindersLocalRepository(
             remindersDao.deleteAllReminders()
         }
     }
+
+    /**
+     * Deletes specific reminder from the db
+     */
+    override suspend fun deleteReminder(id: String) {
+        remindersDao.deleteReminderById(id)
+    }
 }

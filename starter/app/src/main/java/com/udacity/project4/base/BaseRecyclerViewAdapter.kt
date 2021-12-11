@@ -10,8 +10,9 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.udacity.project4.R
 import androidx.appcompat.widget.PopupMenu
+import com.udacity.project4.locationreminders.geofence.reminderDataItem
 
-abstract class BaseRecyclerViewAdapter<T>(private val callback: ((item: T) -> Unit)? = null) :
+abstract class BaseRecyclerViewAdapter<T>(private val callback: ((item: T , adapterView:View) -> Unit)? = null) :
     RecyclerView.Adapter<DataBindingViewHolder<T>>() {
 
     private var _items: MutableList<T> = mutableListOf()
@@ -26,7 +27,6 @@ abstract class BaseRecyclerViewAdapter<T>(private val callback: ((item: T) -> Un
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DataBindingViewHolder<T> {
         val layoutInflater = LayoutInflater.from(parent.context)
-
         val binding = DataBindingUtil
             .inflate<ViewDataBinding>(layoutInflater, getLayoutRes(viewType), parent, false)
         binding.lifecycleOwner = getLifecycleOwner()
@@ -38,26 +38,7 @@ abstract class BaseRecyclerViewAdapter<T>(private val callback: ((item: T) -> Un
         val item = getItem(position)
         holder.bind(item)
         holder.itemView.setOnClickListener {
-            callback?.invoke(item)
-            val cntxt = holder.itemView.context
-            val popupMenu = PopupMenu(cntxt, holder.itemView)
-            popupMenu.inflate(R.menu.reminder_options)
-            popupMenu.gravity = Gravity.END
-            popupMenu.setOnMenuItemClickListener {
-                when (it.itemId) {
-                    R.id.edit_reminder -> {
-                        //TODO add implementation
-                        true
-                    }
-                    R.id.delete_reminder -> {
-                        //TODO add implementation
-                        true
-                    }
-                    else -> false
-                }
-            }
-            popupMenu.show()
-
+            callback?.invoke(item,holder.itemView)
         }
     }
 

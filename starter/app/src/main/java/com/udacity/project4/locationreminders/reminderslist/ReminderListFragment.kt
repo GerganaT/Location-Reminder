@@ -1,23 +1,30 @@
 package com.udacity.project4.locationreminders.reminderslist
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Toast
+import androidx.appcompat.widget.PopupMenu
 import androidx.databinding.DataBindingUtil
 import com.firebase.ui.auth.AuthUI
+import com.google.android.gms.location.GeofencingClient
+import com.google.android.gms.location.LocationServices
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentRemindersBinding
+import com.udacity.project4.locationreminders.ReminderDescriptionActivity
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import com.udacity.project4.utils.setTitle
 import com.udacity.project4.utils.setup
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ReminderListFragment : BaseFragment() {
+
     //use Koin to retrieve the ViewModel instance
     override val _viewModel: RemindersListViewModel by viewModel()
     private lateinit var binding: FragmentRemindersBinding
+    private val TAG = ReminderListFragment::class.simpleName
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -28,6 +35,7 @@ class ReminderListFragment : BaseFragment() {
                 R.layout.fragment_reminders, container, false
             )
         binding.viewModel = _viewModel
+
 
         setHasOptionsMenu(true)
         setDisplayHomeAsUpEnabled(false)
@@ -49,6 +57,7 @@ class ReminderListFragment : BaseFragment() {
         }
     }
 
+
     override fun onResume() {
         super.onResume()
         //load the reminders list on the ui
@@ -65,11 +74,48 @@ class ReminderListFragment : BaseFragment() {
     }
 
     private fun setupRecyclerView() {
-        val adapter = RemindersListAdapter {
+        val adapter = RemindersListAdapter { selectedReminder, adapterView ->
+            val selectedReminderId = selectedReminder.id
+            val activeGeofences = mutableListOf<String>()
+            activeGeofences.add(selectedReminderId)
+            val geofencingClient: GeofencingClient =
+                LocationServices.getGeofencingClient(requireContext())
+            val cntxt = adapterView.context
+            val popupMenu = PopupMenu(cntxt, adapterView)
+            popupMenu.inflate(R.menu.reminder_options)
+            popupMenu.setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.edit_reminder -> {
+//                        startActivity(
+//                            ReminderDescriptionActivity.newIntent(cntxt, selectedReminder)
+//                        )
+                        //TODO show save fragment with prepopulated fields and remove greyed code
+                        //TODO fix layout reminder details screen
+                        Toast.makeText(context, "Edit clicked", Toast.LENGTH_SHORT).show()
+                        true
+                    }
+                    else -> {
+                        deleteReminder(selectedReminderId)
+                        geofencingClient
+                            .removeGeofences(activeGeofences)
+                            .addOnSuccessListener {
+                                Log.i(
+                                    TAG,
+                                    " Removed geofence with id $selectedReminderId"
+                                )
+                            }
+                        _viewModel.loadReminders()
+                        true
+                    }
+                }
+            }
+            popupMenu.show()
+
         }
 
 //        setup the recycler view using the extension function
         binding.reminderssRecyclerView.setup(adapter)
+
     }
 
 
@@ -84,6 +130,10 @@ class ReminderListFragment : BaseFragment() {
 
     }
 
+    private fun deleteReminder(reminderId: String) {
+        _viewModel.deleteReminder(reminderId)
+    }
+
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
@@ -91,3 +141,4 @@ class ReminderListFragment : BaseFragment() {
         inflater.inflate(R.menu.main_menu, menu)
     }
 }
+
