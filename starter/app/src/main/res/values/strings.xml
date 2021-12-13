@@ -65,5 +65,6 @@
     <string name="geofence_added">Geofence added!</string>
     <string name="reminder_menu_item_delete">Delete</string>
     <string name="reminder_menu_item_edit">Edit</string>
+    <string name="reminder_updated">Reminder Updated</string>
 
 </resources>

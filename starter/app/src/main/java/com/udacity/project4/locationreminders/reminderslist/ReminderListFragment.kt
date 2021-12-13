@@ -13,7 +13,6 @@ import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentRemindersBinding
-import com.udacity.project4.locationreminders.ReminderDescriptionActivity
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import com.udacity.project4.utils.setTitle
 import com.udacity.project4.utils.setup
@@ -85,16 +84,7 @@ class ReminderListFragment : BaseFragment() {
             popupMenu.inflate(R.menu.reminder_options)
             popupMenu.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
-                    R.id.edit_reminder -> {
-//                        startActivity(
-//                            ReminderDescriptionActivity.newIntent(cntxt, selectedReminder)
-//                        )
-                        //TODO show save fragment with prepopulated fields and remove greyed code
-                        //TODO fix layout reminder details screen
-                        Toast.makeText(context, "Edit clicked", Toast.LENGTH_SHORT).show()
-                        true
-                    }
-                    else -> {
+                    R.id.delete_reminder -> {
                         deleteReminder(selectedReminderId)
                         geofencingClient
                             .removeGeofences(activeGeofences)
@@ -106,6 +96,10 @@ class ReminderListFragment : BaseFragment() {
                             }
                         _viewModel.loadReminders()
                         true
+                    }
+                    else -> { Log.i(TAG,"Menu item not found")
+                        false
+
                     }
                 }
             }

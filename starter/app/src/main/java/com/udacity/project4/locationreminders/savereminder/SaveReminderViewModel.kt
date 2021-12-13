@@ -19,8 +19,8 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
     val reminderDescription = MutableLiveData<String>()
     val reminderSelectedLocationStr = MutableLiveData<String>()
     val selectedPOI = MutableLiveData<PointOfInterest>()
-    val latitude = MutableLiveData<Double>()
-    val longitude = MutableLiveData<Double>()
+    val reminderLatitude = MutableLiveData<Double>()
+    val reminderLongitude = MutableLiveData<Double>()
     private val _isEnabled = MutableLiveData<Boolean>()
     val isEnabled: LiveData<Boolean>
         get() = _isEnabled
@@ -43,8 +43,8 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
         reminderDescription.value = null
         reminderSelectedLocationStr.value = null
         selectedPOI.value = null
-        latitude.value = null
-        longitude.value = null
+        reminderLatitude.value = null
+        reminderLongitude.value = null
     }
 
     /**
@@ -81,7 +81,7 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
     /**
      * Validate the entered data and show error to the user if there's any invalid data
      */
-    fun validateEnteredData(reminderData: ReminderDataItem): Boolean {
+    private fun validateEnteredData(reminderData: ReminderDataItem): Boolean {
         if (reminderData.title.isNullOrEmpty()) {
             showSnackBarInt.value = R.string.err_enter_title
             return false
@@ -93,4 +93,5 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
         }
         return true
     }
+
 }

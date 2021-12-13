@@ -24,8 +24,6 @@ import com.udacity.project4.locationreminders.RemindersActivity
 
 class AuthenticationActivity : AppCompatActivity() {
    private lateinit var signInLauncher:ActivityResultLauncher<Intent>
-
-   private lateinit var authenticationViewModel: AuthenticationViewModel
    private var resultCode:Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,9 +32,6 @@ class AuthenticationActivity : AppCompatActivity() {
             DataBindingUtil.setContentView(this,R.layout.activity_authentication)
         binding.lifecycleOwner = this
         binding.authenticationActivity = this
-        val authenticationViewModel1:AuthenticationViewModel by viewModel()
-        authenticationViewModel = authenticationViewModel1
-        //TODO optional if user is auth'ed go directly to RemindersActivity
          signInLauncher = registerForActivityResult(
             FirebaseAuthUIActivityResultContract()
         ) { res ->
