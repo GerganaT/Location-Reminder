@@ -14,8 +14,9 @@
             android:id="@+id/imageView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="7"
-            android:scaleType="centerCrop"
+            android:layout_margin="@dimen/margin_normal"
+            android:layout_weight="6"
+            android:scaleType="fitCenter"
             app:srcCompat="@drawable/ic_baseline_class_24" />
 
         <TextView
@@ -23,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/margin_normal"
-            android:layout_weight="1"
+            android:layout_weight="0.5"
             android:gravity="center|start"
             android:text="@{reminderDataItem.title}"
             android:textSize="@dimen/text_size_large"
@@ -31,23 +32,23 @@
 
         <TextView
             android:id="@+id/reminder_description_text"
-            android:gravity="center|start"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/margin_normal"
-            android:layout_weight="1"
+            android:layout_weight="0.5"
+            android:fadeVisible="@{reminderDataItem.description !=null}"
+            android:gravity="center|start"
             android:text="@{reminderDataItem.description}"
             android:textSize="@dimen/text_size_large"
-            android:fadeVisible="@{reminderDataItem.description !=null}"
             tools:text="@string/reminder_desc" />
 
         <TextView
             android:id="@+id/reminder_location_text"
-            android:gravity="center|start"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/margin_normal"
-            android:layout_weight="1"
+            android:layout_weight="0.5"
+            android:gravity="center|start"
             android:text="@{reminderDataItem.location}"
             android:textSize="@dimen/text_size_large"
             tools:text="@string/reminder_location" />
