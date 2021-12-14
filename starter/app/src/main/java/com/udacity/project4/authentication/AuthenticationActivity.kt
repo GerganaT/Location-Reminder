@@ -46,7 +46,7 @@ class AuthenticationActivity : AppCompatActivity() {
                 //if the user is authenticated ,send him to reminders activity
                 val intent = Intent(this,RemindersActivity::class.java)
                 startActivity(intent)
-                Toast.makeText(this,"Successfully logged in",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this,getString(R.string.login_success_message),Toast.LENGTH_SHORT).show()
             }
         }
     }
