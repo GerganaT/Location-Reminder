@@ -62,7 +62,7 @@ class DeviceRebootBroadcastReceiverService : JobIntentService(), CoroutineScope 
                         TAG,
                         geofencePendingIntent,
                         geofencingClient,
-                        cntxt
+
 
                     )
 
