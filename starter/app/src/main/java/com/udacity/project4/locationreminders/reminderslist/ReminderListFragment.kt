@@ -82,10 +82,8 @@ class ReminderListFragment : BaseFragment() {
             val cntxt = adapterView.context
             val popupMenu = PopupMenu(cntxt, adapterView)
             popupMenu.inflate(R.menu.reminder_options)
-            popupMenu.setOnMenuItemClickListener { menuItem ->
-                when (menuItem.itemId) {
-                    R.id.delete_reminder -> {
-                        deleteReminder(selectedReminderId)
+            popupMenu.setOnMenuItemClickListener {
+                deleteReminder(selectedReminderId)
                         geofencingClient
                             .removeGeofences(activeGeofences)
                             .addOnSuccessListener {
@@ -95,13 +93,7 @@ class ReminderListFragment : BaseFragment() {
                                 )
                             }
                         _viewModel.loadReminders()
-                        true
-                    }
-                    else -> { Log.i(TAG,"Menu item not found")
-                        false
-
-                    }
-                }
+                true
             }
             popupMenu.show()
 
