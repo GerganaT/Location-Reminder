@@ -154,8 +154,8 @@ class SaveReminderFragment : BaseFragment() {
 
 
     override fun onStop() {
-        backgroundPermissionSnackbar?.dismiss()
         super.onStop()
+        backgroundPermissionSnackbar?.dismiss()
     }
 
     override fun onDestroy() {
