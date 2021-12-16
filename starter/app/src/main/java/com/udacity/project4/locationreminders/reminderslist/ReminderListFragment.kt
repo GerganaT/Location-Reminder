@@ -3,7 +3,6 @@ package com.udacity.project4.locationreminders.reminderslist
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
 import androidx.databinding.DataBindingUtil
 import com.firebase.ui.auth.AuthUI
@@ -82,17 +81,18 @@ class ReminderListFragment : BaseFragment() {
             val cntxt = adapterView.context
             val popupMenu = PopupMenu(cntxt, adapterView)
             popupMenu.inflate(R.menu.reminder_options)
-            popupMenu.setOnMenuItemClickListener {
+            popupMenu.setOnMenuItemClickListener { _ ->
                 deleteReminder(selectedReminderId)
-                        geofencingClient
-                            .removeGeofences(activeGeofences)
-                            .addOnSuccessListener {
-                                Log.i(
-                                    TAG,
-                                    " Removed geofence with id $selectedReminderId"
-                                )
-                            }
+                geofencingClient
+                    .removeGeofences(activeGeofences)
+                    .addOnSuccessListener {
                         _viewModel.loadReminders()
+                        Log.i(
+                            TAG,
+                            " Removed geofence with id $selectedReminderId"
+                        )
+                    }
+
                 true
             }
             popupMenu.show()
