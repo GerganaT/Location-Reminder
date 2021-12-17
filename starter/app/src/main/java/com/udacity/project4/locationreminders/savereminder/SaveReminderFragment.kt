@@ -80,6 +80,7 @@ class SaveReminderFragment : BaseFragment() {
         checkAndPromptForPermissions()
         binding.lifecycleOwner = viewLifecycleOwner
         binding.saveReminderFragment = this
+        binding.executePendingBindings()
 
     }
 
@@ -109,7 +110,12 @@ class SaveReminderFragment : BaseFragment() {
         enableGPSLauncher =
             registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { activityResult ->
                 if (activityResult.resultCode == RESULT_OK) {
-                    storeReminderAndAddGeofence()
+                    checkDeviceLocationSettingsAndStartGeofence(
+                        cntxt,
+                        enableGPSLauncher,
+                        TAG,
+                    )
+                    { storeReminderAndAddGeofence() }
                 } else {
                     Snackbar.make(
                         binding.root,
