@@ -115,8 +115,9 @@ class SaveReminderFragment : BaseFragment() {
                         cntxt,
                         enableGPSLauncher,
                         TAG,
-                    )
-                    { storeReminderAndAddGeofence() }
+
+                        ) { storeReminderAndAddGeofence() }
+
                 } else {
                     Snackbar.make(
                         binding.root,
@@ -208,8 +209,9 @@ class SaveReminderFragment : BaseFragment() {
         val reminderDataItem = ReminderDataItem(
             title, description, location, latitude, longitude
         )
+
         _viewModel.validateAndSaveReminder(reminderDataItem)
-        Toast.makeText(context,R.string.reminder_saved, Toast.LENGTH_SHORT).show()
+        Toast.makeText(context,R.string.reminder_saved,Toast.LENGTH_SHORT).show()
         addGeofence(
             reminderDataItem,
             TAG,
@@ -217,7 +219,6 @@ class SaveReminderFragment : BaseFragment() {
             geofencingClient,
             cntxt
         )
-
 
 
     }
