@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -207,6 +208,8 @@ class SaveReminderFragment : BaseFragment() {
         val reminderDataItem = ReminderDataItem(
             title, description, location, latitude, longitude
         )
+        _viewModel.validateAndSaveReminder(reminderDataItem)
+        Toast.makeText(context,R.string.reminder_saved, Toast.LENGTH_SHORT).show()
         addGeofence(
             reminderDataItem,
             TAG,
@@ -214,7 +217,7 @@ class SaveReminderFragment : BaseFragment() {
             geofencingClient,
             cntxt
         )
-        _viewModel.validateAndSaveReminder(reminderDataItem)
+
 
 
     }
