@@ -7,23 +7,11 @@
         <deviceKey>
           <Key>
             <type value="VIRTUAL_DEVICE_PATH" />
-<<<<<<< HEAD
-            <value value="C:\Users\chochi\.android\avd\Pixel_2_API_28.avd" />
-||||||| 2ebb4f0
-            <value value="C:\Users\chochi\.android\avd\Pixel_2_API_30_1.avd" />
-=======
             <value value="C:\Users\chochi\.android\avd\Pixel_2_API_30.avd" />
->>>>>>> cd6726b3ea441e057edaffd7fb41e8bb4e8e2f39
           </Key>
         </deviceKey>
       </Target>
     </targetSelectedWithDropDown>
-<<<<<<< HEAD
-    <timeTargetWasSelectedWithDropDown value="2021-12-20T10:52:29.304214Z" />
-||||||| 2ebb4f0
-    <timeTargetWasSelectedWithDropDown value="2021-12-16T17:00:07.098463500Z" />
-=======
-    <timeTargetWasSelectedWithDropDown value="2021-12-18T22:23:13.182286400Z" />
->>>>>>> cd6726b3ea441e057edaffd7fb41e8bb4e8e2f39
+    <timeTargetWasSelectedWithDropDown value="2021-12-20T11:59:42.881370400Z" />
   </component>
 </project>
