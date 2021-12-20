@@ -79,13 +79,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-<<<<<<< HEAD
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
-||||||| 2ebb4f0
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
-=======
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
->>>>>>> cd6726b3ea441e057edaffd7fb41e8bb4e8e2f39
 </manifest>
