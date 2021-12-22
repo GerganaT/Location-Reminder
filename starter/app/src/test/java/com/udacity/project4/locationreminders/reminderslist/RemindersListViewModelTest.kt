@@ -95,7 +95,7 @@ class RemindersListViewModelTest : AutoCloseKoinTest() {
 
     @Test
     fun check_loading() {
-        // Pause dispatcher so you can verify the showLoading-value
+        // Pause dispatcher so you can verify the initial showLoading-value
         mainCoroutineRule.pauseDispatcher()
         // get the reminders' list
         remindersListViewModel.loadReminders()
@@ -120,7 +120,7 @@ class RemindersListViewModelTest : AutoCloseKoinTest() {
     }
 
     @Test
-    fun shouldDeleteReminderWithSpecificId(){
+    fun deleteReminder_shouldDeleteReminderWithSpecificId(){
         // delete a reminder with specific id
         remindersListViewModel.deleteReminder("3")
         // look for the id of the supposedly deleted reminder within the reminders' list

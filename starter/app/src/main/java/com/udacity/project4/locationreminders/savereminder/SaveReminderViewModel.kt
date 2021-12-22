@@ -46,6 +46,7 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
         selectedPOI.value = null
         reminderLatitude.value = null
         reminderLongitude.value = null
+        _isEnabled.value = null
     }
 
     /**
