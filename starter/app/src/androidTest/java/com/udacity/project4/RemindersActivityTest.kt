@@ -65,7 +65,7 @@ class RemindersActivityTest :
         }
     }
 
-
+// TODO:Test toast messages here
 //    TODO: add End to End testing to the app
 
 }
