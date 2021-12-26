@@ -9,7 +9,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PointOfInterest
 import com.udacity.project4.R
 import com.udacity.project4.base.NavigationCommand
-import com.udacity.project4.locationreminders.data.FakeDataSource
+import com.udacity.project4.locationreminders.testShared.FakeDataSource
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import com.udacity.project4.locationreminders.utils.MainCoroutineRule
 import com.udacity.project4.locationreminders.utils.getOrAwaitValue

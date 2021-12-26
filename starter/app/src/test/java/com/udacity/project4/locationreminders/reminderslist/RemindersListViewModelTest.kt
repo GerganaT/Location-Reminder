@@ -5,7 +5,8 @@ import android.os.Build
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.udacity.project4.locationreminders.data.FakeDataSource
+import androidx.test.filters.SmallTest
+import com.udacity.project4.locationreminders.testShared.FakeDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.utils.MainCoroutineRule
 import com.udacity.project4.locationreminders.utils.getOrAwaitValue
@@ -26,6 +27,7 @@ import org.robolectric.annotation.Config
 @Config(sdk = [Build.VERSION_CODES.Q])
 @RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
+@SmallTest
 class RemindersListViewModelTest : AutoCloseKoinTest() {
 
     private lateinit var remindersListViewModel: RemindersListViewModel
