@@ -22,6 +22,8 @@
         <entry key="..\:/Location-Reminder/starter/app/src/main/res/menu/map_options.xml" value="0.33229166666666665" />
         <entry key="..\:/Location-Reminder/starter/app/src/main/res/menu/reminder_options.xml" value="0.33" />
         <entry key="..\:/OLD DISK/Location-Reminder/starter/app/src/main/res/layout/fragment_reminders.xml" value="0.32653985507246375" />
+        <entry key="..\:/OLD DISK/Location-Reminder/starter/app/src/main/res/layout/fragment_save_reminder.xml" value="0.48867753623188404" />
+        <entry key="..\:/OLD DISK/Location-Reminder/starter/app/src/main/res/layout/fragment_select_location.xml" value="0.48867753623188404" />
       </map>
     </option>
   </component>

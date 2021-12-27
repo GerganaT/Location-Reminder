@@ -108,8 +108,6 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
         // verify that the "No Data" text is gone as we have reminder in the list
         onView(withId(R.id.noDataTextView)).check(matches(not(isDisplayed())))
 
-//    TODO: add testing for the error messages.multiple ones done - need to see how to test for a
-        //TODO: single one
     }
 
     @Test
@@ -141,7 +139,7 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
     }
 
     @Test
-    fun showErrorToastWhenRemindersListIsEmpty(){
+    fun showErrorSnackBarWhenRemindersListIsEmpty(){
         //make the fake datasource return an error
         fakeDataSource.setDisplayErrorWhenTrue(true)
         // launch the ReminderListFragment
