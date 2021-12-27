@@ -19,14 +19,11 @@ import com.udacity.project4.locationreminders.data.local.LocalDB
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
 import com.udacity.project4.locationreminders.reminderslist.RemindersListViewModel
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
-
 import com.udacity.project4.util.DataBindingIdlingResource
 import com.udacity.project4.util.monitorActivity
 import com.udacity.project4.utils.EspressoIdlingResource
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.not
 import org.junit.After
@@ -100,6 +97,7 @@ class RemindersActivityTest :
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
         IdlingRegistry.getInstance().register(dataBindingIdlingResource)
 
+
     }
 
     /**
@@ -110,13 +108,17 @@ class RemindersActivityTest :
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
         IdlingRegistry.getInstance().unregister(dataBindingIdlingResource)
 
+
     }
 
-// TODO:Test toast messages here
+
+
 //    TODO: add End to End testing to the app
+    //TODO verify what scenario has to be tested
 
     @Test
-    fun createOneReminder_deleteReminder()  {
+    fun createReminder_deleteReminder() {
+
 
         fun getActivity(activityScenario: ActivityScenario<RemindersActivity>): Activity? {
             var activity: Activity? = null
@@ -156,22 +158,61 @@ class RemindersActivityTest :
                     isDisplayed()
                 )
             )
-        //Doesn't work
+        //TODO??
+        Thread.sleep(2000)
+        // verify that the geofence was added by checking for the "Geofence Added! " toast
         onView(withText(R.string.geofence_added)).inRoot(withDecorView(not(`is`(activity?.window?.decorView))))
             .check(
                 matches(
                     isDisplayed()
                 )
             )
-        // make sure our reminder is visible on the screen and click it
+        // make sure the reminder is visible on the screen and click it
         onView(withText("title")).check(matches(isDisplayed())).perform(click())
         // click the delete pop-up menu
-        onView(withText(R.string.reminder_menu_item_delete)).check(matches(isDisplayed())).perform(click())
+        onView(withText(R.string.reminder_menu_item_delete)).check(matches(isDisplayed()))
+            .perform(click())
         // make sure the reminder is deleted by checking that the "no data" TextView is shown
         onView(withId(R.id.noDataTextView)).check(matches(isDisplayed()))
+
     }
 
+    @Test
+    fun setNoLocation_triggerErrorSnackbar() {
+        // launch the activity
+        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
+        // monitor the data - binding values
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+        // click add reminder fab
+        onView(withId(R.id.addReminderFAB)).perform(click())
+
+        // enter reminder title
+        onView(withId(R.id.reminderTitle)).perform(typeText("title"))
+        // close soft keyboard
+        Espresso.closeSoftKeyboard()
+        // try to save the reminder without getting location
+        onView(withId(R.id.saveReminder)).perform(click())
+        // verify that the snackbar with the error is visible
+        onView(withId(com.google.android.material.R.id.snackbar_text))
+            .check(matches(withText(R.string.err_select_location)))
+
+    }
+
+    @Test
+    fun setNoTitle_triggerErrorSnackbar() {
+        // launch the activity
+        val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
+        // monitor the data - binding values
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+        // click add reminder fab
+        onView(withId(R.id.addReminderFAB)).perform(click())
+
+        // try to save the reminder without getting location
+        onView(withId(R.id.saveReminder)).perform(click())
+        // verify that the snackbar with the error is visible
+        onView(withId(com.google.android.material.R.id.snackbar_text))
+            .check(matches(withText(R.string.err_enter_title)))
 
 
-
+    }
 }

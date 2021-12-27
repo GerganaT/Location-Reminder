@@ -86,7 +86,7 @@ fun reRegisterGeofence(
         geofencingClient.addGeofences(geofenceRequest, geofencePendingIntent).run {
 
             addOnSuccessListener {
-               Toast.makeText(cntxt, "Geofence added", Toast.LENGTH_SHORT).show()
+                Toast.makeText(cntxt, "Geofence added!", Toast.LENGTH_SHORT).show()
                 Log.i("Add Geofence", geofence.requestId)
             }
             addOnFailureListener {

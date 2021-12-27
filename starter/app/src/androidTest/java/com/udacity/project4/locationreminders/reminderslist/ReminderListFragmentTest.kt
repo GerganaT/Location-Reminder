@@ -41,11 +41,6 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
 
     private lateinit var fakeDataSource: FakeDataSource
 
-
-    @get:Rule
-    var instantTaskExecutorRule = InstantTaskExecutorRule()
-
-
     @Before
     fun initViewModelAndRepository() {
         stopKoin()
@@ -76,7 +71,7 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
             Navigation.setViewNavController(it.view!!, navController)
         }
         //WHEN - Click on the add reminder fab
-        onView(withId(R.id.addReminderFAB)).perform(ViewActions.click())
+        onView(withId(R.id.addReminderFAB)).perform(click())
 
         //THEN - Verify that we navigate to the save reminder screen
         Mockito.verify(navController).navigate(
@@ -132,7 +127,7 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
             )
         )
         // click on the popup - menu with the "Delete"option
-        onView(withText("Delete"))
+        onView(withText(R.string.reminder_menu_item_delete))
             .perform(click())
         // verify that "No Data" text is now shown as we deleted the only reminder in the list
         onView(withId(R.id.noDataTextView)).check(matches(isDisplayed()))
@@ -145,7 +140,9 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
         // launch the ReminderListFragment
         launchFragmentInContainer<ReminderListFragment>(Bundle(), R.style.AppTheme)
         //make sure that an error-message snackbar pops up
-        onView(withText("Error retrieving reminders")).check(matches(isDisplayed()))
+        onView(withId(com.google.android.material.R.id.snackbar_text))
+            .check(matches(withText("Error retrieving reminders")))
+
 
     }
 

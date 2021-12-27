@@ -16,6 +16,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -35,6 +36,7 @@ import org.koin.android.ext.android.inject
 private val runningQOrLater = Build.VERSION.SDK_INT >=
         Build.VERSION_CODES.Q
 
+
 class SaveReminderFragment : BaseFragment() {
     //Get the view model this time as a single to be shared with the another fragment
     override val _viewModel: SaveReminderViewModel by inject()
@@ -45,6 +47,7 @@ class SaveReminderFragment : BaseFragment() {
     var backgroundPermissionSnackbar: Snackbar? = null
     private lateinit var geofencingClient: GeofencingClient
     private lateinit var cntxt: Context
+
 
 
     // A PendingIntent for the Broadcast Receiver that handles geofence transitions.
@@ -211,7 +214,7 @@ class SaveReminderFragment : BaseFragment() {
         )
 
         _viewModel.validateAndSaveReminder(reminderDataItem)
-        Toast.makeText(context,R.string.reminder_saved,Toast.LENGTH_SHORT).show()
+        Toast.makeText(cntxt,R.string.reminder_saved,Toast.LENGTH_SHORT).show()
         addGeofence(
             reminderDataItem,
             TAG,
