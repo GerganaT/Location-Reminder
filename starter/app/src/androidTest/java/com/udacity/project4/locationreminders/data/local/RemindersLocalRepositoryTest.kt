@@ -43,7 +43,7 @@ class RemindersLocalRepositoryTest : AutoCloseKoinTest() {
 
     private lateinit var remindersInMemoryDatabase: RemindersDatabase
     private lateinit var remindersLocalRepository: RemindersLocalRepository
-    private lateinit var remindersDao: RemindersDao
+
 
     // allow synchronous test execution of architecture components
     @get:Rule
@@ -63,7 +63,6 @@ class RemindersLocalRepositoryTest : AutoCloseKoinTest() {
             modules(listOf(testModule))
         }
         remindersInMemoryDatabase = inject<RemindersDatabase>().value
-        remindersDao = inject<RemindersDao>().value
         remindersLocalRepository = inject<RemindersLocalRepository>().value
 
 
