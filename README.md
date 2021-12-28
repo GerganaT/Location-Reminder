@@ -31,7 +31,7 @@ Step by step explanation of how to get a dev environment running.
 
 Right click on the `test` or `androidTest` packages and select Run Tests
 
-### Break Down Tests
+### Tests Breakdown
 
 
 ```
