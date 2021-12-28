@@ -1,3 +1,17 @@
+/* Copyright 2021,  Gergana Kirilova
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 package com.udacity.project4.locationreminders.savereminder
 
 import android.app.Application
@@ -9,8 +23,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.PointOfInterest
 import com.udacity.project4.R
 import com.udacity.project4.base.NavigationCommand
-import com.udacity.project4.locationreminders.testShared.FakeDataSource
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
+import com.udacity.project4.locationreminders.testShared.FakeDataSource
 import com.udacity.project4.locationreminders.utils.MainCoroutineRule
 import com.udacity.project4.locationreminders.utils.getOrAwaitValue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -149,15 +163,15 @@ class SaveReminderViewModelTest : AutoCloseKoinTest() {
     }
 
     @Test
-    fun onClear_shouldSetLiveDataToNull(){
+    fun onClear_shouldSetLiveDataToNull() {
         // create LatLng object to test the SelectedPOI live data value
-        val latLng = LatLng(1.1,2.2)
+        val latLng = LatLng(1.1, 2.2)
         // add values to all the LiveData
         saveReminderViewModel.run {
             reminderTitle.value = "title"
             reminderDescription.value = "description"
             reminderSelectedLocationStr.value = "location"
-            selectedPOI.value = PointOfInterest(latLng,"123","name")
+            selectedPOI.value = PointOfInterest(latLng, "123", "name")
             reminderLatitude.value = 1.1
             reminderLongitude.value = 2.2
             setIsEnabled(true)
@@ -167,7 +181,10 @@ class SaveReminderViewModelTest : AutoCloseKoinTest() {
         // assert that all the LiveData values were set to null
         assertThat(saveReminderViewModel.reminderTitle.getOrAwaitValue(), `is`(nullValue()))
         assertThat(saveReminderViewModel.reminderDescription.getOrAwaitValue(), `is`(nullValue()))
-        assertThat(saveReminderViewModel.reminderSelectedLocationStr.getOrAwaitValue(), `is`(nullValue()))
+        assertThat(
+            saveReminderViewModel.reminderSelectedLocationStr.getOrAwaitValue(),
+            `is`(nullValue())
+        )
         assertThat(saveReminderViewModel.selectedPOI.getOrAwaitValue(), `is`(nullValue()))
         assertThat(saveReminderViewModel.reminderLatitude.getOrAwaitValue(), `is`(nullValue()))
         assertThat(saveReminderViewModel.reminderLongitude.getOrAwaitValue(), `is`(nullValue()))

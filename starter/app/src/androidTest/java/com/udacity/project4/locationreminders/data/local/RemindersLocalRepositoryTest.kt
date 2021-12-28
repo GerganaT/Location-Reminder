@@ -1,3 +1,17 @@
+/* Copyright 2021,  Gergana Kirilova
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 package com.udacity.project4.locationreminders.data.local
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
@@ -5,14 +19,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
-import com.udacity.project4.locationreminders.data.dto.Result.Error
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.CoreMatchers.*
 import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.core.IsCollectionContaining.hasItem
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -23,7 +34,6 @@ import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.AutoCloseKoinTest
 import org.koin.test.inject
-import kotlin.reflect.typeOf
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
@@ -90,15 +100,16 @@ class RemindersLocalRepositoryTest : AutoCloseKoinTest() {
         assertThat(savedReminder.data.id, `is`("1"))
         // delete the reminder
         remindersLocalRepository.deleteReminder(savedReminder.data.id)
-       // try to get the deleted reminder
+        // try to get the deleted reminder
         val deletedReminder = remindersLocalRepository.getReminder(savedReminder.data.id)
         // assert that an error is being thrown since we attempted to get a deleted reminder
-        assertThat(deletedReminder ,`is`(Result.Error("Reminder not found!")))
+        assertThat(deletedReminder, `is`(Result.Error("Reminder not found!")))
 
     }
+
     // runBlocking is used here because of https://github.com/Kotlin/kotlinx.coroutines/issues/1204
     @Test
-    fun saveReminders_getAndDeleteAllReminders()= runBlocking{
+    fun saveReminders_getAndDeleteAllReminders() = runBlocking {
         // create two dummy reminders
         val reminder1 = ReminderDTO(
             "title1",
@@ -117,19 +128,19 @@ class RemindersLocalRepositoryTest : AutoCloseKoinTest() {
             "2"
         )
         // save the reminders
-        mutableListOf(reminder1,reminder2).forEach{ reminder ->
+        mutableListOf(reminder1, reminder2).forEach { reminder ->
             remindersLocalRepository.saveReminder(reminder)
         }
-         // get the reminders from the db
+        // get the reminders from the db
         val savedRemindersList = remindersLocalRepository.getReminders() as Result.Success
         // assert that the reminders were successfully saved by checking that the list is not empty
-        assertThat(savedRemindersList.data ,`is`(not(emptyList())))
+        assertThat(savedRemindersList.data, `is`(not(emptyList())))
         // delete the saved reminders
         remindersLocalRepository.deleteAllReminders()
         // try to get the reminders from the db
         val deletedReminders = remindersLocalRepository.getReminders() as Result.Success
-       // assert that we have successfully deleted the reminders
-        assertThat(deletedReminders.data , `is`(emptyList()) )
+        // assert that we have successfully deleted the reminders
+        assertThat(deletedReminders.data, `is`(emptyList()))
 
     }
 

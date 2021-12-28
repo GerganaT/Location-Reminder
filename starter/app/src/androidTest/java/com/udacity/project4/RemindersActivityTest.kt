@@ -1,3 +1,17 @@
+/* Copyright 2021,  Gergana Kirilova
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 package com.udacity.project4
 
 import android.app.Activity
@@ -87,6 +101,7 @@ class RemindersActivityTest :
         }
     }
 
+
     /**
      * Idling resources tell Espresso that the app is idle or busy. This is needed when operations
      * are not scheduled in the main Looper (for example when executed on a different thread).
@@ -111,10 +126,6 @@ class RemindersActivityTest :
 
     }
 
-
-
-//    TODO: add End to End testing to the app
-    //TODO verify what scenario has to be tested
 
     @Test
     fun createReminder_deleteReminder() {
@@ -158,7 +169,9 @@ class RemindersActivityTest :
                     isDisplayed()
                 )
             )
-        //TODO??
+        //I know using sleep is discouraged but using custom idling resource makes the test hang
+        // or crashes it,sleep grants time to the "Reminder Saved!" toast to disappear so we can
+        // test the next one
         Thread.sleep(2000)
         // verify that the geofence was added by checking for the "Geofence Added! " toast
         onView(withText(R.string.geofence_added)).inRoot(withDecorView(not(`is`(activity?.window?.decorView))))

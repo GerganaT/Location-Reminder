@@ -1,3 +1,17 @@
+/* Copyright 2021,  Gergana Kirilova
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 package com.udacity.project4.locationreminders.data.local
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
@@ -76,7 +90,7 @@ class RemindersDaoTest : AutoCloseKoinTest() {
             remindersDao.saveReminder(reminderDTO)
         }
 
-       // get the reminders
+        // get the reminders
         val remindersList = remindersDao.getReminders()
         val savedReminder1 = remindersList[0]
         val savedReminder2 = remindersList[1]
@@ -130,7 +144,7 @@ class RemindersDaoTest : AutoCloseKoinTest() {
         assertThat(savedReminder.longitude, `is`(2.2))
         assertThat(savedReminder.id, `is`("1"))
         //delete the reminder
-         remindersDao.deleteReminderById(savedReminder.id)
+        remindersDao.deleteReminderById(savedReminder.id)
         // attempt to get it by id from the db
         val deletedReminder = remindersDao.getReminderById("1")
         // assert that there is no reminder present with such id

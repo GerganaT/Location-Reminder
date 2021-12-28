@@ -1,3 +1,17 @@
+/* Copyright 2021,  Gergana Kirilova
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 package com.udacity.project4.locationreminders.reminderslist
 
 import android.app.Application
@@ -6,11 +20,13 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
-import com.udacity.project4.locationreminders.testShared.FakeDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
+import com.udacity.project4.locationreminders.testShared.FakeDataSource
 import com.udacity.project4.locationreminders.utils.MainCoroutineRule
 import com.udacity.project4.locationreminders.utils.getOrAwaitValue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.`is`
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -20,8 +36,6 @@ import org.koin.core.context.stopKoin
 import org.koin.core.inject
 import org.koin.dsl.module
 import org.koin.test.AutoCloseKoinTest
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.*
 import org.robolectric.annotation.Config
 
 @Config(sdk = [Build.VERSION_CODES.Q])
@@ -101,34 +115,37 @@ class RemindersListViewModelTest : AutoCloseKoinTest() {
         mainCoroutineRule.pauseDispatcher()
         // get the reminders' list
         remindersListViewModel.loadReminders()
-       //assert that the progress indicator is shown while reminders' list is being loaded
-        assertThat(remindersListViewModel.showLoading.getOrAwaitValue(), `is` (true))
+        //assert that the progress indicator is shown while reminders' list is being loaded
+        assertThat(remindersListViewModel.showLoading.getOrAwaitValue(), `is`(true))
         // resume the dispatcher to finish the reminders' list load
         mainCoroutineRule.resumeDispatcher()
         // assert that the progress indicator is hidden as we have reminders' data fully loaded
-        assertThat(remindersListViewModel.showLoading.getOrAwaitValue(),`is`(false))
+        assertThat(remindersListViewModel.showLoading.getOrAwaitValue(), `is`(false))
     }
 
     @Test
-    fun shouldReturnError(){
+    fun shouldReturnError() {
         // make the fake data source return an error
         fakeDataSource.setDisplayErrorWhenTrue(true)
         // try to load the reminders
         remindersListViewModel.loadReminders()
-       //assert that an error message is shown to user
-        assertThat(remindersListViewModel.showSnackBar.getOrAwaitValue(), `is`(
-            ("Error retrieving reminders")))
+        //assert that an error message is shown to user
+        assertThat(
+            remindersListViewModel.showSnackBar.getOrAwaitValue(), `is`(
+                ("Error retrieving reminders")
+            )
+        )
 
     }
 
     @Test
-    fun deleteReminder_shouldDeleteReminderWithSpecificId(){
+    fun deleteReminder_shouldDeleteReminderWithSpecificId() {
         // delete a reminder with specific id
         remindersListViewModel.deleteReminder("3")
         // look for the id of the supposedly deleted reminder within the reminders' list
-       val filteredList = fakeDataSource.remindersList?.filter { it.id == "3"}
+        val filteredList = fakeDataSource.remindersList?.filter { it.id == "3" }
         // make sure that the reminders' list doesn't contain reminder with the specified above id
-        assertThat(filteredList ,`is`(emptyList()))
+        assertThat(filteredList, `is`(emptyList()))
     }
 
 }

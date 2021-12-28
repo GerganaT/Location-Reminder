@@ -1,3 +1,17 @@
+/* Copyright 2021,  Gergana Kirilova
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 package com.udacity.project4.locationreminders.savereminder
 
 import android.Manifest
@@ -16,7 +30,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -49,12 +62,16 @@ class SaveReminderFragment : BaseFragment() {
     private lateinit var cntxt: Context
 
 
-
     // A PendingIntent for the Broadcast Receiver that handles geofence transitions.
     private val geofencePendingIntent: PendingIntent by lazy {
         val intent = Intent(cntxt, GeofenceBroadcastReceiver::class.java)
         intent.action = ACTION_GEOFENCE_EVENT
-        PendingIntent.getBroadcast(cntxt, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        PendingIntent.getBroadcast(
+            cntxt,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -64,7 +81,12 @@ class SaveReminderFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_save_reminder, container, false)
+            DataBindingUtil.inflate(
+                inflater,
+                R.layout.fragment_save_reminder,
+                container,
+                false
+            )
         setDisplayHomeAsUpEnabled(true)
         binding.viewModel = _viewModel
         geofencingClient = LocationServices.getGeofencingClient(cntxt)
@@ -112,7 +134,9 @@ class SaveReminderFragment : BaseFragment() {
             }
 
         enableGPSLauncher =
-            registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { activityResult ->
+            registerForActivityResult(
+                ActivityResultContracts.StartIntentSenderForResult()
+            ) { activityResult ->
                 if (activityResult.resultCode == RESULT_OK) {
                     checkDeviceLocationSettingsAndStartGeofence(
                         cntxt,
@@ -124,7 +148,8 @@ class SaveReminderFragment : BaseFragment() {
                 } else {
                     Snackbar.make(
                         binding.root,
-                        R.string.location_required_error, Snackbar.LENGTH_INDEFINITE
+                        R.string.location_required_error,
+                        Snackbar.LENGTH_INDEFINITE
                     ).setAction(android.R.string.ok) {
                         checkDeviceLocationSettingsAndStartGeofence(
                             cntxt,
@@ -141,7 +166,9 @@ class SaveReminderFragment : BaseFragment() {
     fun addLocation() {
         //            Navigate to another fragment to get the user location
         _viewModel.navigationCommand.value =
-            NavigationCommand.To(SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment())
+            NavigationCommand.To(
+                SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment()
+            )
     }
 
     fun saveReminder() {
@@ -214,7 +241,7 @@ class SaveReminderFragment : BaseFragment() {
         )
 
         _viewModel.validateAndSaveReminder(reminderDataItem)
-        Toast.makeText(cntxt,R.string.reminder_saved,Toast.LENGTH_SHORT).show()
+        Toast.makeText(cntxt, R.string.reminder_saved, Toast.LENGTH_SHORT).show()
         addGeofence(
             reminderDataItem,
             TAG,

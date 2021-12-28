@@ -1,3 +1,17 @@
+/* Copyright 2021,  Gergana Kirilova
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 package com.udacity.project4.utils
 
 import android.annotation.SuppressLint
@@ -12,7 +26,6 @@ import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
-import com.udacity.project4.locationreminders.savereminder.SaveReminderFragment
 import com.udacity.project4.utils.Constants.GEOFENCE_RADIUS_IN_METERS
 import com.udacity.project4.utils.Constants.NOTIFICATION_RESPONSIVENESS_IN_MS
 
@@ -45,7 +58,7 @@ fun reRegisterGeofence(
 
         geofencingClient.addGeofences(geofenceRequest, geofencePendingIntent).run {
             addOnSuccessListener {
-                Log.i(tag,"Reregistered with success! with id: ${geofence.requestId}" )
+                Log.i(tag, "Reregistered with success! with id: ${geofence.requestId}")
             }
             addOnFailureListener {
                 if ((it.message != null)) {
@@ -58,11 +71,12 @@ fun reRegisterGeofence(
 }
 
 @SuppressLint("MissingPermission")
- fun addGeofence(reminderDataItem: ReminderDataItem? = null,
-                        tag: String,
-                        geofencePendingIntent: PendingIntent,
-                        geofencingClient: GeofencingClient,
-                        cntxt: Context
+fun addGeofence(
+    reminderDataItem: ReminderDataItem? = null,
+    tag: String,
+    geofencePendingIntent: PendingIntent,
+    geofencingClient: GeofencingClient,
+    cntxt: Context
 ) {
     if (reminderDataItem != null) {
         val geofence = Geofence.Builder()
@@ -104,7 +118,7 @@ fun checkDeviceLocationSettingsAndStartGeofence(
     cntxt: Context,
     enableGPSLauncher: ActivityResultLauncher<IntentSenderRequest>,
     tag: String,
-    storeReminderAndAddGeofence:()->Unit
+    storeReminderAndAddGeofence: () -> Unit
 
 ) {
     val locationRequest = LocationRequest.create().apply {
