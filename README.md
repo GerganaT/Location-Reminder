@@ -7,12 +7,6 @@ A Todo list app with location reminders that remind the user to do something whe
 1. Clone the project to your local machine.
 2. Open the project using Android Studio.
 
-### Dependencies
-
-```
-1. A created project on Firebase console.
-2. A create a project on Google console.
-```
 
 ### Installation
 
@@ -28,8 +22,9 @@ Step by step explanation of how to get a dev environment running.
     c. Create a new api key and restrict it for android apps.
     d. Add your package name and SHA-1 signing-certificate fingerprint.
     c. Enable Maps SDK for Android from API restrictions and Save.
-    d. Copy the api key to the `google_maps_api.xml`
-3. Run the app on your mobile phone or emulator with Google Play Services in it.
+    d. Copy the api key to your local.properties file like this:
+       MAPS_API_KEY_DEBUG=your_key_here
+3. Run the app on your mobile phone or emulator with Google Play Services on it.
 ```
 
 ## Testing
@@ -38,16 +33,22 @@ Right click on the `test` or `androidTest` packages and select Run Tests
 
 ### Break Down Tests
 
-Explain what each test does and why
 
 ```
 1.androidTest
-        //TODO: Students explain their testing here.
+        RemindersDaoTest - tests the RemindersDao methods to ensure that read / write / delete operations function as expected.
+        RemindersLocalRepositoryTest - Integration test between the RemindersLocalRepository and RemindersDao s' methods to ensure that read / write / delete operations function         as expected.
+        ReminderListFragmentTest - tests the reminder's navigation functionality as well as the data ,available in the UI, to ensure that read/write/delete UI-related operations
+        function as expected and error-containing snackbar is displayed if applicable.
+        RemindersActivityTest - end-to-end black box test for the RemindersActivity , to ensure that the UX is smooth and the proper data and widgets are present in the UI               during specific user interactions.
+        
 2. test
-        //TODO: Students explain their testing here.
+      RemindersListViewModelTest - tests the methods of the RemindersListViewModel and the LiveData's values to ensure that read/write/delete operations deliver the expected           output and error values are produced where applicable.
+      SaveReminderViewModelTest - tests the methods of the RemindersListViewModel and the LiveData's values to ensure that read/write/delete operations deliver the expected           output and error values are produced where applicable.
+      
 ```
 
-## Project Instructions
+## Project Instructions I hereby,being the student, completed
     1. Create a Login screen to ask users to login using an email address or a Google account.  Upon successful login, navigate the user to the Reminders screen.   If there is no account, the app should navigate to a Register screen.
     2. Create a Register screen to allow a user to register using an email address or a Google account.
     3. Create a screen that displays the reminders retrieved from local storage. If there are no reminders, display a   "No Data"  indicator.  If there are any errors, display an error message.
@@ -65,12 +66,6 @@ Explain what each test does and why
         b. Add testing for the error messages.
         c. Add End-To-End testing for the Fragments navigation.
 
-
-## Student Deliverables:
-
-1. APK file of the final project.
-2. Git Repository with the code.
-
 ## Built With
 
 * [Koin](https://github.com/InsertKoinIO/koin) - A pragmatic lightweight dependency injection framework for Kotlin.
@@ -78,3 +73,18 @@ Explain what each test does and why
 * [JobIntentService](https://developer.android.com/reference/androidx/core/app/JobIntentService) - Run background service from the background application, Compatible with >= Android O.
 
 ## License
+
+Copyright 2021,  Gergana Kirilova
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
