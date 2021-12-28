@@ -16,9 +16,11 @@ package com.udacity.project4.locationreminders.savereminder.selectreminderlocati
 
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -29,6 +31,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -55,6 +59,9 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     private lateinit var foregroundLocationPermission: String
     private var marker: Marker? = null
     private var snackbar: Snackbar? = null
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var isForegroundPermissionGranted = false
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -63,20 +70,34 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         binding.selectLocationFragment = this
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = _viewModel
+        _viewModel.foregroundPermissionIsGranted.observe(this,{
+                permissionGranted -> isForegroundPermissionGranted = permissionGranted
+
+        })
         setHasOptionsMenu(true)
         setDisplayHomeAsUpEnabled(true)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
         requestPermissionLauncher =
             registerForActivityResult(
                 ActivityResultContracts.RequestPermission()
             ) { isGranted: Boolean ->
-                if (isGranted) {
+                _viewModel.setforegroundPermissionIsGranted(isGranted)
+                if (isForegroundPermissionGranted) {
+                    if (!onLocationSelected()){
+                        onLocationSelected()
+                    }else{
+                        return@registerForActivityResult
+                    }
+                    setupLocation()
                     setupMap()
                 } else {
+                    setupMap()
                     showLocationPermissionNotGrantedSnackbar()
                 }
             }
+
 
         return binding.root
     }
@@ -91,12 +112,26 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             binding.root,
             R.string.permission_denied_explanation, Snackbar.LENGTH_INDEFINITE
         ).setAction(android.R.string.ok) {
-            showLocationPermissionEducationalUI(foregroundLocationPermission)
+            snackbar?.dismiss()
         }
         snackbar?.show()
 
     }
 
+    private fun showOnSaveLocationPermissionNotGrantedSnackbar() {
+            snackbar = Snackbar.make(
+                binding.root,
+                R.string.permission_on_save_denied_explanation, Snackbar.LENGTH_INDEFINITE
+            ).setAction(android.R.string.ok) {
+                requestPermissionLauncher.launch(foregroundLocationPermission)
+            }
+            snackbar?.show()
+
+
+
+
+
+    }
 
     private fun enableMyLocation() {
         foregroundLocationPermission = Manifest.permission.ACCESS_FINE_LOCATION
@@ -106,11 +141,14 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 foregroundLocationPermission
             ) == PackageManager.PERMISSION_GRANTED
             -> {
-                map.isMyLocationEnabled = true
+                setupLocation()
                 setupMap()
+
+
             }
             shouldShowRequestPermissionRationale(foregroundLocationPermission) -> {
                 showLocationPermissionEducationalUI(foregroundLocationPermission)
+                setupMap()
 
             }
 
@@ -120,6 +158,8 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 showLocationPermissionEducationalUI(foregroundLocationPermission)
             }
         }
+
+
     }
 
     private fun showLocationPermissionEducationalUI(locationPermission: String) {
@@ -127,8 +167,8 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             .apply {
                 setMessage(R.string.permission_explanation)
                 setNegativeButton(R.string.alert_dialog_deny) { dialog: DialogInterface, _ ->
-                    showLocationPermissionNotGrantedSnackbar()
                     dialog.dismiss()
+                    setupMap()
                 }
                 setPositiveButton(R.string.alert_dialog_allow_button)
                 { _, _ ->
@@ -156,26 +196,30 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     }
 
-    private fun setupMap() {
-        // showing dummy location at GooglePlex for security reasons
-        val latitude = 37.422131
-        val longitude = -122.084801
-        val homeLatLong = LatLng(latitude, longitude)
-        val cameraZoom = 19f
 
-        map.moveCamera(
-            CameraUpdateFactory
-                .newLatLngZoom(homeLatLong, cameraZoom)
-        )
-        map.addMarker(
-            MarkerOptions()
-                .position(homeLatLong)
-                .title(getString(R.string.my_location))
-        )
+    private fun setupMap() {
+
         setMapStyle(map)
         onRandomLocationClicked(map)
         onPoiClicked(map)
         showAddLocationMarkerDialog()
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun setupLocation() {
+        map.isMyLocationEnabled = true
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { currentLocation: Location? ->
+                currentLocation?.let {
+                    val cameraZoom = 16f
+                    val homeLatLong = LatLng(it.latitude, it.longitude)
+                    map.moveCamera(
+                        CameraUpdateFactory.newLatLngZoom(homeLatLong, cameraZoom)
+                    )
+
+                }
+
+            }
     }
 
     private fun setMapStyle(map: GoogleMap) {
@@ -248,14 +292,23 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     }
 
-    fun onLocationSelected() {
-        if (marker != null) {
-            _viewModel.reminderSelectedLocationStr.value = marker?.title
-            _viewModel.reminderLatitude.value = marker?.position?.latitude
-            _viewModel.reminderLongitude.value = marker?.position?.longitude
-            _viewModel.setIsEnabled(false)
-            findNavController().popBackStack()
+
+
+    fun onLocationSelected():Boolean {
+        if (isForegroundPermissionGranted){
+            if (marker != null) {
+                _viewModel.reminderSelectedLocationStr.value = marker?.title
+                _viewModel.reminderLatitude.value = marker?.position?.latitude
+                _viewModel.reminderLongitude.value = marker?.position?.longitude
+                _viewModel.setIsEnabled(false)
+                findNavController().popBackStack()
+            }
         }
+        else{
+            showOnSaveLocationPermissionNotGrantedSnackbar()
+            return false
+        }
+        return true
     }
 
 

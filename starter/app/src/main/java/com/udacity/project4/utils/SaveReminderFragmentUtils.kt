@@ -34,7 +34,7 @@ fun SaveReminderFragment.showBackgroundPermissionNotGrantedSnackbar(
     ).setAction(android.R.string.ok) {
         requestBackgroundPermission()
     }
-    backgroundPermissionSnackbar?.show()
+   backgroundPermissionSnackbar?.show()
 
 }
 
