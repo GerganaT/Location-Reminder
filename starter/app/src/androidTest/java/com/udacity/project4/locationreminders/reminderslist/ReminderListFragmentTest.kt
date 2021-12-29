@@ -156,5 +156,4 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
 
 
     }
-
 }

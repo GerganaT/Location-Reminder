@@ -48,7 +48,6 @@ import org.robolectric.annotation.Config
 class SaveReminderViewModelTest : AutoCloseKoinTest() {
 
     private lateinit var saveReminderViewModel: SaveReminderViewModel
-    private lateinit var fakeDataSource: FakeDataSource
     private lateinit var appContext: Application
     private lateinit var reminderDataItem: ReminderDataItem
     private lateinit var titlelessReminderDataItem: ReminderDataItem
@@ -110,7 +109,6 @@ class SaveReminderViewModelTest : AutoCloseKoinTest() {
             modules(listOf(testModule))
         }
 
-        fakeDataSource = inject<FakeDataSource>().value
 
         saveReminderViewModel = inject<SaveReminderViewModel>().value
     }
@@ -167,7 +165,10 @@ class SaveReminderViewModelTest : AutoCloseKoinTest() {
         // try setting the value of _foregroundPermissionIsGranted to true
         saveReminderViewModel.setforegroundPermissionIsGranted(true)
         // assert that the value was changed to true
-        assertThat(saveReminderViewModel.foregroundPermissionIsGranted.getOrAwaitValue(), `is`(true))
+        assertThat(
+            saveReminderViewModel.foregroundPermissionIsGranted.getOrAwaitValue(),
+            `is`(true)
+        )
     }
 
     @Test
@@ -197,6 +198,9 @@ class SaveReminderViewModelTest : AutoCloseKoinTest() {
         assertThat(saveReminderViewModel.reminderLatitude.getOrAwaitValue(), `is`(nullValue()))
         assertThat(saveReminderViewModel.reminderLongitude.getOrAwaitValue(), `is`(nullValue()))
         assertThat(saveReminderViewModel.isEnabled.getOrAwaitValue(), `is`(nullValue()))
-        assertThat(saveReminderViewModel.foregroundPermissionIsGranted.getOrAwaitValue(), `is`(nullValue()))
+        assertThat(
+            saveReminderViewModel.foregroundPermissionIsGranted.getOrAwaitValue(),
+            `is`(nullValue())
+        )
     }
 }
