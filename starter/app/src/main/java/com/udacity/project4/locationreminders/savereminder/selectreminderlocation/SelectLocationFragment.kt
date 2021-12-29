@@ -17,6 +17,7 @@ package com.udacity.project4.locationreminders.savereminder.selectreminderlocati
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.content.res.Resources
@@ -61,6 +62,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     private var snackbar: Snackbar? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var isForegroundPermissionGranted = false
+    private var alertDialog: AlertDialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -68,10 +70,12 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_select_location, container, false)
         binding.selectLocationFragment = this
-        binding.lifecycleOwner = viewLifecycleOwner
+        binding.lifecycleOwner = this
         binding.viewModel = _viewModel
-        _viewModel.foregroundPermissionIsGranted.observe(this,{
-                permissionGranted -> isForegroundPermissionGranted = permissionGranted
+        readFromSharedPreferences()
+        _viewModel.foregroundPermissionIsGranted.observe(this, { permissionGranted ->
+            isForegroundPermissionGranted = permissionGranted
+            storeToSharedPreferences()
 
         })
         setHasOptionsMenu(true)
@@ -85,16 +89,16 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             ) { isGranted: Boolean ->
                 _viewModel.setforegroundPermissionIsGranted(isGranted)
                 if (isForegroundPermissionGranted) {
-                    if (!onLocationSelected()){
-                        onLocationSelected()
-                    }else{
-                        return@registerForActivityResult
-                    }
                     setupLocation()
                     setupMap()
+                    if (!onLocationSelected()) {
+                        onLocationSelected()
+                    } else {
+                        return@registerForActivityResult
+                    }
+
                 } else {
                     setupMap()
-                    showLocationPermissionNotGrantedSnackbar()
                 }
             }
 
@@ -104,31 +108,42 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     override fun onStop() {
         snackbar?.dismiss()
+        alertDialog?.dismiss()
         super.onStop()
     }
 
-    private fun showLocationPermissionNotGrantedSnackbar() {
-        snackbar = Snackbar.make(
-            binding.root,
-            R.string.permission_denied_explanation, Snackbar.LENGTH_INDEFINITE
-        ).setAction(android.R.string.ok) {
-            snackbar?.dismiss()
+    // save the isForegroundPermissionGranted value even when the app is off, so the user
+    //doesn't see "permission not granted" dialog when the app is launched again when permission
+    // has been granted prior to closing the app.
+    private fun storeToSharedPreferences() {
+        val sharedPref = activity?.getPreferences(Context.MODE_PRIVATE) ?: return
+        with(sharedPref.edit()) {
+            putBoolean(
+                getString(R.string.saved_is_permission_granted_key),
+                isForegroundPermissionGranted
+            )
+            apply()
         }
-        snackbar?.show()
-
     }
 
+    // read method paired with storeToSharedPreferences
+    private fun readFromSharedPreferences() {
+        val sharedPref = activity?.getPreferences(Context.MODE_PRIVATE) ?: return
+        isForegroundPermissionGranted = sharedPref.getBoolean(
+            getString(R.string.saved_is_permission_granted_key),
+            isForegroundPermissionGranted
+        )
+    }
+
+
     private fun showOnSaveLocationPermissionNotGrantedSnackbar() {
-            snackbar = Snackbar.make(
-                binding.root,
-                R.string.permission_on_save_denied_explanation, Snackbar.LENGTH_INDEFINITE
-            ).setAction(android.R.string.ok) {
-                requestPermissionLauncher.launch(foregroundLocationPermission)
-            }
-            snackbar?.show()
-
-
-
+        snackbar = Snackbar.make(
+            binding.root,
+            R.string.permission_on_save_denied_explanation, Snackbar.LENGTH_INDEFINITE
+        ).setAction(android.R.string.ok) {
+            requestPermissionLauncher.launch(foregroundLocationPermission)
+        }
+        snackbar?.show()
 
 
     }
@@ -156,6 +171,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             else -> {
                 _viewModel.setIsEnabled(false)
                 showLocationPermissionEducationalUI(foregroundLocationPermission)
+
             }
         }
 
@@ -198,11 +214,10 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
 
     private fun setupMap() {
-
+        showAddLocationMarkerDialog()
         setMapStyle(map)
         onRandomLocationClicked(map)
         onPoiClicked(map)
-        showAddLocationMarkerDialog()
     }
 
     @SuppressLint("MissingPermission")
@@ -283,6 +298,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                     dialog.dismiss()
                 }
             }.create()
+        alertDialog = dialog
         dialog.show()
         val messageText = dialog.findViewById(android.R.id.message) as? TextView
         messageText?.textSize = resources.getDimension(R.dimen.text_size_extra_small)
@@ -293,9 +309,8 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     }
 
 
-
-    fun onLocationSelected():Boolean {
-        if (isForegroundPermissionGranted){
+    fun onLocationSelected(): Boolean {
+        if (isForegroundPermissionGranted) {
             if (marker != null) {
                 _viewModel.reminderSelectedLocationStr.value = marker?.title
                 _viewModel.reminderLatitude.value = marker?.position?.latitude
@@ -303,8 +318,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 _viewModel.setIsEnabled(false)
                 findNavController().popBackStack()
             }
-        }
-        else{
+        } else {
             showOnSaveLocationPermissionNotGrantedSnackbar()
             return false
         }

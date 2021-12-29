@@ -81,5 +81,6 @@
     <string name="reminder_menu_item_edit">Edit</string>
     <string name="reminder_updated">Reminder Updated</string>
     <string name="login_success_message">Successfully logged in</string>
+    <string name="saved_is_permission_granted_key">isPermissionGrantedKey</string>
 
 </resources>
