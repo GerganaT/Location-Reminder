@@ -32,7 +32,6 @@ import kotlin.coroutines.CoroutineContext
 
 private const val TAG = "GeofenceIntentService"
 
-var reminderDataItem: ReminderDataItem? = null
 
 class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
 
@@ -62,21 +61,18 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
                 Log.e(TAG, "Unknown error - the geofence service is not available now")
                 return
             }
-
             if (geofencingEvent.geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
-                val geofenceRequestId = when {
+                when {
                     geofencingEvent.triggeringGeofences.isNotEmpty() ->
-                        geofencingEvent.triggeringGeofences[0].requestId
+                        geofencingEvent.triggeringGeofences.forEach { geofence ->
+                            sendNotification(geofence.requestId)
+                        }
                     else -> {
                         Log.e(TAG, "No triggering geofences found")
                         return
                     }
                 }
-                sendNotification(geofenceRequestId)
-
-
             }
-
         }
     }
 
@@ -89,17 +85,17 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
             val result = remindersLocalRepository.getReminder(requestId)
             if (result is Result.Success<ReminderDTO>) {
                 val reminderDTO = result.data
-                reminderDataItem = ReminderDataItem(
-                    reminderDTO.title,
-                    reminderDTO.description,
-                    reminderDTO.location,
-                    reminderDTO.latitude,
-                    reminderDTO.longitude,
-                    reminderDTO.id
-                )
+
                 //send a notification to the user with the reminder details
                 sendNotification(
-                    this@GeofenceTransitionsJobIntentService, reminderDataItem as ReminderDataItem
+                    this@GeofenceTransitionsJobIntentService, ReminderDataItem(
+                        reminderDTO.title,
+                        reminderDTO.description,
+                        reminderDTO.location,
+                        reminderDTO.latitude,
+                        reminderDTO.longitude,
+                        reminderDTO.id
+                    )
                 )
             }
         }

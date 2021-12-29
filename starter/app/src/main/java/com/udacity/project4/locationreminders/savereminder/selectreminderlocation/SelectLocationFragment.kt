@@ -74,8 +74,11 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         binding.viewModel = _viewModel
         readFromSharedPreferences()
         _viewModel.foregroundPermissionIsGranted.observe(this, { permissionGranted ->
-            isForegroundPermissionGranted = permissionGranted
-            storeToSharedPreferences()
+            permissionGranted?.let {
+                isForegroundPermissionGranted = it
+                storeToSharedPreferences()
+            }
+
 
         })
         setHasOptionsMenu(true)

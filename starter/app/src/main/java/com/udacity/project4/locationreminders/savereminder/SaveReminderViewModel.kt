@@ -39,7 +39,6 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
     val isEnabled: LiveData<Boolean>
         get() = _isEnabled
     private val _foregroundPermissionIsGranted = MutableLiveData<Boolean>()
-    //TODO add to testing
     val foregroundPermissionIsGranted: LiveData<Boolean>
         get() = _foregroundPermissionIsGranted
 
@@ -52,8 +51,8 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
     }
 
     /**
-     * Enable/disable the "save"-button in the map view screen if the user granted location tracking
-     * permission and created a marker.
+     * Prompt the user to grant foreground location permission if this is false, so the reminder
+     * can be passed to the SaveReminder screen
      */
     fun setforegroundPermissionIsGranted(boolean: Boolean) {
         _foregroundPermissionIsGranted.value = boolean
@@ -70,6 +69,7 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
         reminderLatitude.value = null
         reminderLongitude.value = null
         _isEnabled.value = null
+        _foregroundPermissionIsGranted.value = null
     }
 
     /**

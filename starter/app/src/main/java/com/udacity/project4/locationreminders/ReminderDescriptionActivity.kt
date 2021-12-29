@@ -21,7 +21,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.udacity.project4.R
 import com.udacity.project4.databinding.ActivityReminderDescriptionBinding
-import com.udacity.project4.locationreminders.geofence.reminderDataItem
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 
 /**
@@ -48,6 +47,7 @@ class ReminderDescriptionActivity : AppCompatActivity() {
             this,
             R.layout.activity_reminder_description
         )
-        binding.reminderDataItem = reminderDataItem
+        binding.reminderDataItem =
+            intent.getSerializableExtra("EXTRA_ReminderDataItem") as ReminderDataItem
     }
 }

@@ -156,10 +156,18 @@ class SaveReminderViewModelTest : AutoCloseKoinTest() {
 
     @Test
     fun setIsEnabled_shouldPassBooleanValueTo_isEnabled() {
-        // try setting the value to isEnabled to true
+        // try setting the value of isEnabled to true
         saveReminderViewModel.setIsEnabled(true)
         // assert that the value was changed to true
         assertThat(saveReminderViewModel.isEnabled.getOrAwaitValue(), `is`(true))
+    }
+
+    @Test
+    fun setForegroundPermissionGranted_shouldPassBooleanValueTo_foregroundPermissionIsGranted() {
+        // try setting the value of _foregroundPermissionIsGranted to true
+        saveReminderViewModel.setforegroundPermissionIsGranted(true)
+        // assert that the value was changed to true
+        assertThat(saveReminderViewModel.foregroundPermissionIsGranted.getOrAwaitValue(), `is`(true))
     }
 
     @Test
@@ -189,6 +197,6 @@ class SaveReminderViewModelTest : AutoCloseKoinTest() {
         assertThat(saveReminderViewModel.reminderLatitude.getOrAwaitValue(), `is`(nullValue()))
         assertThat(saveReminderViewModel.reminderLongitude.getOrAwaitValue(), `is`(nullValue()))
         assertThat(saveReminderViewModel.isEnabled.getOrAwaitValue(), `is`(nullValue()))
-
+        assertThat(saveReminderViewModel.foregroundPermissionIsGranted.getOrAwaitValue(), `is`(nullValue()))
     }
 }
