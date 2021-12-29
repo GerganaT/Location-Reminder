@@ -96,7 +96,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 _viewModel.setforegroundPermissionIsGranted(isGranted)
                 if (isForegroundPermissionGranted) {
                     setupLocation()
-                    setupMap()
+
                     if (!onLocationSelected()) {
                         onLocationSelected()
                     } else {
@@ -104,12 +104,16 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                     }
 
                 } else {
-                    if (!shouldShowRequestPermissionRationale(foregroundLocationPermission)){
-                     Toast.makeText(context,R.string.completely_denied_permission,Toast.LENGTH_LONG).show()
-                    }
-                    else{
+                    if (!shouldShowRequestPermissionRationale(foregroundLocationPermission)) {
+                        Toast.makeText(
+                            context,
+                            R.string.completely_denied_permission,
+                            Toast.LENGTH_LONG
+                        ).show()
+
+                    } else {
                         showOnSaveLocationPermissionNotGrantedSnackbar()
-                        setupMap()
+
                     }
 
                 }
@@ -166,29 +170,19 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     private fun enableMyLocation() {
         foregroundLocationPermission = Manifest.permission.ACCESS_FINE_LOCATION
-        when {
+        when (PackageManager.PERMISSION_GRANTED
+        ) {
             ContextCompat.checkSelfPermission(
                 requireContext(),
                 foregroundLocationPermission
-            ) == PackageManager.PERMISSION_GRANTED
-            -> {
+            ) -> {
                 setupLocation()
-                setupMap()
 
 
             }
-            shouldShowRequestPermissionRationale(foregroundLocationPermission) -> {
-                showLocationPermissionEducationalUI(foregroundLocationPermission)
-                setupMap()
-
-            }
-
-
             else -> {
                 _viewModel.setIsEnabled(false)
-                showLocationPermissionEducationalUI(foregroundLocationPermission)
-
-
+                showOnSaveLocationPermissionNotGrantedSnackbar()
             }
         }
 
@@ -202,7 +196,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 setNegativeButton(R.string.alert_dialog_deny) { dialog: DialogInterface, _ ->
                     dialog.dismiss()
                     showOnSaveLocationPermissionNotGrantedSnackbar()
-                    setupMap()
+
                 }
                 setPositiveButton(R.string.alert_dialog_allow_button)
                 { _, _ ->
@@ -226,7 +220,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
         enableMyLocation()
-
+        setupMap()
 
     }
 
@@ -331,7 +325,8 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
                 foregroundLocationPermission
-            ) == PackageManager.PERMISSION_GRANTED) {
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             if (marker != null) {
                 _viewModel.reminderSelectedLocationStr.value = marker?.title
                 _viewModel.reminderLatitude.value = marker?.position?.latitude
@@ -340,10 +335,12 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 findNavController().popBackStack()
             }
         } else {
-            if (!shouldShowRequestPermissionRationale(foregroundLocationPermission)){
-              Toast.makeText(context,R.string.completely_denied_permission,Toast.LENGTH_LONG).show()
+            if (!shouldShowRequestPermissionRationale(foregroundLocationPermission)) {
+                Toast.makeText(context, R.string.completely_denied_permission, Toast.LENGTH_LONG)
+                    .show()
+            } else {
+                showOnSaveLocationPermissionNotGrantedSnackbar()
             }
-            else{showOnSaveLocationPermissionNotGrantedSnackbar()}
 
             return false
         }
