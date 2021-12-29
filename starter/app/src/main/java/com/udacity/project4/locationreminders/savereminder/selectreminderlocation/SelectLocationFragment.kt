@@ -26,6 +26,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -63,6 +64,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private var isForegroundPermissionGranted = false
     private var alertDialog: AlertDialog? = null
+    private var grantedAfterDenial = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -90,6 +92,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
             registerForActivityResult(
                 ActivityResultContracts.RequestPermission()
             ) { isGranted: Boolean ->
+                grantedAfterDenial = isGranted
                 _viewModel.setforegroundPermissionIsGranted(isGranted)
                 if (isForegroundPermissionGranted) {
                     setupLocation()
@@ -101,9 +104,19 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                     }
 
                 } else {
-                    setupMap()
+                    if (!shouldShowRequestPermissionRationale(foregroundLocationPermission)){
+                     Toast.makeText(context,R.string.completely_denied_permission,Toast.LENGTH_LONG).show()
+                    }
+                    else{
+                        showOnSaveLocationPermissionNotGrantedSnackbar()
+                        setupMap()
+                    }
+
                 }
             }
+
+
+
 
 
         return binding.root
@@ -175,6 +188,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 _viewModel.setIsEnabled(false)
                 showLocationPermissionEducationalUI(foregroundLocationPermission)
 
+
             }
         }
 
@@ -187,6 +201,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 setMessage(R.string.permission_explanation)
                 setNegativeButton(R.string.alert_dialog_deny) { dialog: DialogInterface, _ ->
                     dialog.dismiss()
+                    showOnSaveLocationPermissionNotGrantedSnackbar()
                     setupMap()
                 }
                 setPositiveButton(R.string.alert_dialog_allow_button)
@@ -313,7 +328,10 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
 
     fun onLocationSelected(): Boolean {
-        if (isForegroundPermissionGranted) {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                foregroundLocationPermission
+            ) == PackageManager.PERMISSION_GRANTED) {
             if (marker != null) {
                 _viewModel.reminderSelectedLocationStr.value = marker?.title
                 _viewModel.reminderLatitude.value = marker?.position?.latitude
@@ -322,7 +340,11 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
                 findNavController().popBackStack()
             }
         } else {
-            showOnSaveLocationPermissionNotGrantedSnackbar()
+            if (!shouldShowRequestPermissionRationale(foregroundLocationPermission)){
+              Toast.makeText(context,R.string.completely_denied_permission,Toast.LENGTH_LONG).show()
+            }
+            else{showOnSaveLocationPermissionNotGrantedSnackbar()}
+
             return false
         }
         return true

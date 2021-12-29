@@ -82,5 +82,6 @@
     <string name="reminder_updated">Reminder Updated</string>
     <string name="login_success_message">Successfully logged in</string>
     <string name="saved_is_permission_granted_key">isPermissionGrantedKey</string>
+    <string name="completely_denied_permission"><![CDATA[Location permission is needed to save the reminder,to grant permission please go to settings -> apps and notifications and restart the app .]]></string>
 
 </resources>
