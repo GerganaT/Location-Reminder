@@ -189,33 +189,6 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
 
     }
 
-    private fun showLocationPermissionEducationalUI(locationPermission: String) {
-        val dialog = AlertDialog.Builder(requireContext())
-            .apply {
-                setMessage(R.string.permission_explanation)
-                setNegativeButton(R.string.alert_dialog_deny) { dialog: DialogInterface, _ ->
-                    dialog.dismiss()
-                    showOnSaveLocationPermissionNotGrantedSnackbar()
-
-                }
-                setPositiveButton(R.string.alert_dialog_allow_button)
-                { _, _ ->
-                    requestPermissionLauncher.launch(locationPermission)
-                }
-            }.create()
-        dialog.show()
-        val title = dialog.findViewById(android.R.id.title) as? TextView
-        title?.textSize = resources.getDimension(R.dimen.text_size_extra_small)
-        val messageText = dialog.findViewById(android.R.id.message) as? TextView
-        messageText?.textSize = resources.getDimension(R.dimen.text_size_extra_small)
-        val positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-        positiveButton.textSize = resources.getDimension(R.dimen.text_size_extra_small)
-        val negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
-        negativeButton.textSize = resources.getDimension(R.dimen.text_size_extra_small)
-
-
-    }
-
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
