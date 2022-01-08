@@ -100,7 +100,8 @@ fun addGeofence(
         geofencingClient.addGeofences(geofenceRequest, geofencePendingIntent).run {
 
             addOnSuccessListener {
-                Toast.makeText(cntxt, "Geofence added!", Toast.LENGTH_SHORT).show()
+                //  use custom toast builder - needed for better Espresso- testing functionality
+                ToastIdlingResource.showToast(cntxt, "Geofence added!", Toast.LENGTH_SHORT).show()
                 Log.i("Add Geofence", geofence.requestId)
             }
             addOnFailureListener {

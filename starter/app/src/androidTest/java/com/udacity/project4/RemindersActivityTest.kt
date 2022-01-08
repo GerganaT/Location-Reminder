@@ -36,6 +36,7 @@ import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.util.DataBindingIdlingResource
 import com.udacity.project4.util.monitorActivity
 import com.udacity.project4.utils.EspressoIdlingResource
+import com.udacity.project4.utils.ToastIdlingResource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.`is`
@@ -62,6 +63,7 @@ class RemindersActivityTest :
     private lateinit var appContext: Application
 
     private val dataBindingIdlingResource = DataBindingIdlingResource()
+    private val toastIdlingResource = ToastIdlingResource.getIdlingResource()
 
 
     /**
@@ -111,6 +113,7 @@ class RemindersActivityTest :
     fun registerIdlingResource() {
         IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
         IdlingRegistry.getInstance().register(dataBindingIdlingResource)
+        IdlingRegistry.getInstance().register(toastIdlingResource)
 
 
     }
@@ -122,6 +125,7 @@ class RemindersActivityTest :
     fun unregisterIdlingResource() {
         IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
         IdlingRegistry.getInstance().unregister(dataBindingIdlingResource)
+        IdlingRegistry.getInstance().unregister(toastIdlingResource)
 
 
     }
@@ -169,10 +173,10 @@ class RemindersActivityTest :
                     isDisplayed()
                 )
             )
-        //I know using sleep is discouraged but using custom idling resource makes the test hang
-        // or crashes it,sleep grants time to the "Reminder Saved!" toast to disappear so we can
-        // test the next one
-        Thread.sleep(2000)
+        // use custom IdlingResource as we're testing multiple toasts so we can avoid situation
+        // where the test exits before all toasts have appeared and thus causing flakiness.
+        // idea from https://knowledge.udacity.com/questions/770651
+        ToastIdlingResource.increment()
         // verify that the geofence was added by checking for the "Geofence Added! " toast
         onView(withText(R.string.geofence_added)).inRoot(withDecorView(not(`is`(activity?.window?.decorView))))
             .check(

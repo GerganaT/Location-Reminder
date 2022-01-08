@@ -31,6 +31,8 @@ private const val NOTIFICATION_CHANNEL_ID = BuildConfig.APPLICATION_ID + ".chann
 
 
 fun sendNotification(context: Context, reminderDataItem: ReminderDataItem) {
+
+
     val notificationManager = context
         .getSystemService<NotificationManager>()
 
